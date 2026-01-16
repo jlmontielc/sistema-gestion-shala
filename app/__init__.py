@@ -1,7 +1,7 @@
 import pymysql
 pymysql.install_as_MySQLdb()
 
-from flask import Flask, app
+from flask import Flask, app, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -16,9 +16,11 @@ def create_app():
 
     db.init_app(app)
 
+    from flask import redirect, url_for
+
     @app.route("/")
     def home():
-        return "Sistema de Gestión de Shalas funcionando"
+        return redirect(url_for('auth.register'))
 
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)

@@ -5,9 +5,10 @@
     <title>Registro de Usuario</title>
 </head>
 <body>
-    <h2>Registro</h2>
+    <h2>Registro de Usuario</h2>
 
-    <form method="POST">
+    <!-- IMPORTANTE: method="POST" -->
+    <form method="POST" action="/register">
         <label>Nombre</label><br>
         <input type="text" name="nombre" required><br><br>
 
@@ -18,7 +19,7 @@
         <input type="password" name="password" required><br><br>
 
         <label>Rol</label><br>
-        <select name="rol">
+        <select name="rol" required>
             <option value="YOGUI">Yogui</option>
             <option value="INSTRUCTOR">Instructor</option>
             <option value="ADMIN">Administrador</option>
