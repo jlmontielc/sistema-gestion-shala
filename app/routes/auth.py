@@ -33,3 +33,50 @@ def register():
         return redirect(url_for('auth.register'))
 
     return render_template('register.html')
+
+from flask_login import login_user
+from werkzeug.security import check_password_hash
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        usuario = Usuario.query.filter_by(email=email).first()
+
+        if usuario and check_password_hash(usuario.password_hash, password):
+            login_user(usuario)
+            return "Login exitoso"
+
+        return "Credenciales incorrectas", 401
+
+    return render_template('login.html')
+
+from flask_login import login_required
+
+@auth_bp.route('/dashboard')
+@login_required
+def dashboard():
+    return "Dashboard general"
+
+from flask_login import login_required
+from app.routes.decorators import role_required
+
+@auth_bp.route('/admin')
+@login_required
+@role_required('ADMIN')
+def admin_panel():
+    return "Panel de administración"
+
+@auth_bp.route('/gestion-clases')
+@login_required
+@role_required('ADMIN', 'INSTRUCTOR')
+def gestion_clases():
+    return "Gestión de clases"
+
+@auth_bp.route('/mis-reservas')
+@login_required
+@role_required('YOGUI')
+def mis_reservas():
+    return "Mis reservas"
