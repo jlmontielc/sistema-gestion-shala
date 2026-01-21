@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Clase</title>
+</head>
+<body>
+    <h2>Programar Nueva Clase</h2>
+    <form method="POST">
+        <label>Título:</label> <input type="text" name="titulo" required><br><br>
+        <label>Descripción:</label> <textarea name="descripcion"></textarea><br><br>
+        <label>Fecha:</label> <input type="datetime-local" name="fecha_hora" required><br><br>
+        <label>Duración (min):</label> <input type="number" name="duracion" value="60"><br><br>
+        <label>Cupos:</label> <input type="number" name="capacidad" value="10"><br><br>
+        
+        <label>Modalidad:</label>
+        <select name="modalidad">
+            <option value="PRESENCIAL">Presencial</option>
+            <option value="ONLINE">Online</option>
+        </select><br><br>
+        
+        <label>Link (Online):</label> <input type="text" name="room_link"><br><br>
+        
+        <button type="submit">Guardar Clase</button>
+    </form>
+</body>
+</html>

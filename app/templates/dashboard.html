@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Shala</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .card { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .btn { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .btn-danger { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <h1>Bienvenido, {{ user.nombre }}</h1>
+    <p>Rol: <strong>{{ user.rol }}</strong></p>
+    <hr>
+
+    {% if user.rol in ['INSTRUCTOR', 'ADMIN'] %}
+    <div class="card">
+        <h3>🧘 Panel de Instructor</h3>
+        <p>Gestiona tus horarios y alumnos.</p>
+        <a href="{{ url_for('clases.crear_clase') }}" class="btn">📅 Programar Nueva Clase</a>
+        <a href="{{ url_for('clases.listar_clases') }}" class="btn">📋 Ver Lista de Clases</a>
+    </div>
+    {% endif %}
+
+    {% if user.rol == 'YOGUI' %}
+    <div class="card">
+        <h3>🧘 Panel de Alumno</h3>
+        <p>Reserva tu lugar en el mat.</p>
+        <a href="{{ url_for('clases.listar_clases') }}" class="btn">📅 Ver Calendario y Reservar</a>
+        <a href="{{ url_for('reservas.mis_reservas') }}" class="btn">🎫 Ver Mis Reservas</a>
+    </div>
+    {% endif %}
+
+    <br><br>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger">Cerrar Sesión</a>
+</body>
+</html>

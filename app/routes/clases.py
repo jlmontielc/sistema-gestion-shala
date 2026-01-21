@@ -49,10 +49,31 @@ def crear_clase():
 @clases_bp.route('/listar')
 @login_required
 def listar_clases():
-    clases = Clase.query.all()
-    # Simple vista rápida para ver si funcionó
-    html = "<h1>Clases Disponibles</h1><ul>"
+    clases = Clase.query.order_by(Clase.fecha_hora.asc()).all()
+    
+    # Creamos una tabla HTML sencilla
+    html = """
+    <h1>📅 Calendario de Clases</h1>
+    <p>Bienvenido. Aquí puedes ver y reservar tus clases.</p>
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Clase</th>
+            <th>Fecha</th>
+            <th>Instructor</th>
+            <th>Acción</th>
+        </tr>
+    """
+    
     for c in clases:
-        html += f"<li>{c.titulo} - {c.fecha_hora}</li>"
-    html += "</ul>"
+        html += f"""
+        <tr>
+            <td>{c.titulo}</td>
+            <td>{c.fecha_hora}</td>
+            <td>Profe ID {c.instructor_id}</td> <td>
+                <a href="/reservas/crear/{c.id}">Reservar Ahora</a>
+            </td>
+        </tr>
+        """
+    
+    html += "</table><br><a href='/dashboard'>Volver al inicio</a>"
     return html

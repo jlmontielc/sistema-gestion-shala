@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash
+from flask_login import logout_user
 
 from app import db
 from app.models.usuario import Usuario
@@ -47,7 +49,7 @@ def login():
 
         if usuario and check_password_hash(usuario.password_hash, password):
             login_user(usuario)
-            return "Login exitoso"
+            return redirect(url_for('auth.dashboard'))
 
         return "Credenciales incorrectas", 401
 
@@ -58,7 +60,7 @@ from flask_login import login_required
 @auth_bp.route('/dashboard')
 @login_required
 def dashboard():
-    return "Dashboard general"
+    return render_template('dashboard.html', user=current_user)
 
 from flask_login import login_required
 from app.routes.decorators import role_required
@@ -80,3 +82,8 @@ def gestion_clases():
 @role_required('YOGUI')
 def mis_reservas():
     return "Mis reservas"
+
+@auth_bp.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
