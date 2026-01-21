@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tomar Asistencia</title>
+</head>
+<body>
+    <h2>📋 Tomar Asistencia: {{ clase.titulo }}</h2>
+    <p>Fecha: {{ clase.fecha_hora }}</p>
+    <hr>
+
+    {% if reservas|length == 0 %}
+        <p>⚠️ No hay alumnos inscritos en esta clase.</p>
+        <a href="/dashboard">Volver</a>
+    {% else %}
+        <form method="POST">
+            <table border="1" cellpadding="10">
+                <thead>
+                    <tr>
+                        <th>Alumno (ID)</th>
+                        <th>¿Asistió?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reserva in reservas %}
+                    <tr>
+                        <td>Alumno #{{ reserva.yogui_id }}</td>
+                        <td style="text-align: center;">
+                            <input type="checkbox" name="asistencia_{{ reserva.id }}" checked>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br>
+            <button type="submit">💾 Guardar Asistencia</button>
+        </form>
+    {% endif %}
+</body>
+</html>

@@ -46,34 +46,75 @@ def crear_clase():
 
     return render_template('crear_clase.html')
 
+
 @clases_bp.route('/listar')
 @login_required
 def listar_clases():
     clases = Clase.query.order_by(Clase.fecha_hora.asc()).all()
     
-    # Creamos una tabla HTML sencilla
+    # Encabezado de la página
     html = """
-    <h1>📅 Calendario de Clases</h1>
-    <p>Bienvenido. Aquí puedes ver y reservar tus clases.</p>
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>Clase</th>
-            <th>Fecha</th>
-            <th>Instructor</th>
-            <th>Acción</th>
-        </tr>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Lista de Clases</title>
+        <style>
+            body { font-family: sans-serif; padding: 20px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+            th { background-color: #f2f2f2; }
+            .btn { text-decoration: none; padding: 8px 15px; border-radius: 5px; color: white; }
+            .btn-blue { background-color: #007bff; }
+            .btn-green { background-color: #28a745; }
+            .btn-gray { background-color: #6c757d; }
+        </style>
+    </head>
+    <body>
+        <h1>📅 Calendario de Clases</h1>
+        <a href="/dashboard" class="btn btn-gray">⬅ Volver al Dashboard</a>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Clase</th>
+                    <th>Fecha</th>
+                    <th>Horario</th>
+                    <th>Modalidad</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
     """
     
+    # Lógica para mostrar botones según el Rol
     for c in clases:
+        boton_accion = ""
+        
+        # SI ERES ALUMNO (YOGUI) -> Ves botón de RESERVAR
+        if current_user.rol == 'YOGUI':
+            boton_accion = f'<a href="/reservas/crear/{c.id}" class="btn btn-blue">Reservar Lugar</a>'
+            
+        # SI ERES INSTRUCTOR O ADMIN -> Ves botón de TOMAR ASISTENCIA
+        elif current_user.rol in ['INSTRUCTOR', 'ADMIN']:
+            boton_accion = f'<a href="/asistencia/tomar/{c.id}" class="btn btn-green">📋 Tomar Lista</a>'
+
         html += f"""
         <tr>
-            <td>{c.titulo}</td>
-            <td>{c.fecha_hora}</td>
-            <td>Profe ID {c.instructor_id}</td> <td>
-                <a href="/reservas/crear/{c.id}">Reservar Ahora</a>
+            <td><strong>{c.titulo}</strong></td>
+            <td>{c.fecha_hora.strftime('%d/%m/%Y')}</td>
+            <td>{c.fecha_hora.strftime('%H:%M')} ({c.duracion_min} min)</td>
+            <td>{c.modalidad}</td>
+            <td>
+                {boton_accion}
             </td>
         </tr>
         """
     
-    html += "</table><br><a href='/dashboard'>Volver al inicio</a>"
+    html += """
+            </tbody>
+        </table>
+    </body>
+    </html>
+    """
     return html
