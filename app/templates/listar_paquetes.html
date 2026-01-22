@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Paquetes Disponibles</title>
+</head>
+<body>
+    <h2>📦 Paquetes y Precios</h2>
+    <a href="/dashboard">⬅ Volver al Dashboard</a>
+    <hr>
+
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th>Nombre</th>
+                <th>Clases Incluidas</th>
+                <th>Precio</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in paquetes %}
+            <tr>
+                <td><strong>{{ p.nombre }}</strong></td>
+                <td>{{ p.sesiones_incluidas }} Clases</td>
+                <td>${{ p.precio }}</td>
+                <td>
+                    {% if current_user.rol == 'YOGUI' %}
+                        <a href="{{ url_for('paquetes.comprar_paquete', id=p.id) }}" 
+                           style="background-color: #28a745; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">
+                           💳 Comprar Ahora
+                        </a>
+                    {% else %}
+                        <span style="color: grey;">Vista Previa</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No hay paquetes creados todavía.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <br>
+    
+    {% if current_user.rol == 'ADMIN' %}
+        <a href="{{ url_for('paquetes.crear_paquete') }}">➕ Crear Nuevo Paquete</a>
+    {% endif %}
+    
+</body>
+</html>

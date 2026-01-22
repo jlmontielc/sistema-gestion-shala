@@ -31,14 +31,16 @@ def create_app():
     # --- modificacion prueba clases ---
     from app.routes.clases import clases_bp
     app.register_blueprint(clases_bp)
-    # -------------------
- 
+    
     from app.routes.reservas import reservas_bp
     app.register_blueprint(reservas_bp)
 
     from app.routes.asistencia import asistencia_bp
     app.register_blueprint(asistencia_bp)
 
+    from app.routes.paquetes import paquetes_bp
+    app.register_blueprint(paquetes_bp)
+    # -------------------
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)

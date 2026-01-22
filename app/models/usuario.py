@@ -13,6 +13,7 @@ class Usuario(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     rol = db.Column(db.Enum('ADMIN', 'INSTRUCTOR', 'YOGUI'), nullable=False)
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
+    saldo_clases = db.Column(db.Integer, default=0)
 
     instructor = db.relationship('Instructor', backref='usuario', uselist=False)
 

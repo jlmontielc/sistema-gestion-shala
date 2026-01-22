@@ -14,19 +14,31 @@ reservas_bp = Blueprint('reservas', __name__, url_prefix='/reservas')
 def crear_reserva(clase_id):
     clase = Clase.query.get_or_404(clase_id)
     
-    # 1. Verificar si la clase está llena
-    # Contamos cuántas reservas activas tiene esa clase
+    # --- 1. NUEVO: EL CANDADO DE SEGURIDAD (Cobro) ---
+    if current_user.saldo_clases < 1:
+        return """
+        <h1>⛔ Saldo Insuficiente</h1>
+        <p>No tienes clases disponibles en tu cuenta.</p>
+        <p>Por favor, compra un paquete para continuar.</p>
+        <br>
+        <a href='/paquetes/listar'>🛒 Ir a Comprar Paquetes</a> | <a href='/dashboard'>Volver</a>
+        """
+
+    # 2. Verificar si la clase está llena (Lógica antigua)
     total_reservas = Reserva.query.filter_by(clase_id=clase_id, estado='RESERVADO').count()
-    
     if total_reservas >= clase.capacidad:
         return "<h1>Error: La clase está llena 🚫</h1><a href='/clases/listar'>Volver</a>"
 
-    # 2. Verificar si el usuario YA reservó esa clase (para no duplicar)
+    # 3. Verificar si ya reservó (Lógica antigua)
     reserva_existente = Reserva.query.filter_by(clase_id=clase_id, yogui_id=current_user.id).first()
     if reserva_existente:
         return "<h1>Ya estás inscrito en esta clase ✅</h1><a href='/clases/listar'>Volver</a>"
 
-    # 3. Crear la reserva
+    # --- 4. NUEVO: COBRAR LA ENTRADA ---
+    # Le restamos 1 al saldo del usuario
+    current_user.saldo_clases -= 1 
+
+    # Creamos la reserva
     nueva_reserva = Reserva(
         clase_id=clase.id,
         yogui_id=current_user.id,
@@ -36,7 +48,14 @@ def crear_reserva(clase_id):
     db.session.add(nueva_reserva)
     db.session.commit()
     
-    return "<h1>¡Reserva Confirmada! 🎉</h1><p>Nos vemos en el mat.</p><a href='/clases/listar'>Volver al calendario</a>"
+    return f"""
+    <h1>¡Reserva Confirmada! 🎉</h1>
+    <p>Te esperamos en el mat.</p>
+    <hr>
+    <p>➖ Se ha descontado 1 clase de tu cuenta.</p>
+    <p>Te quedan: <strong>{current_user.saldo_clases} clases</strong> disponibles.</p>
+    <a href='/clases/listar'>Volver al calendario</a>
+    """
 
 @reservas_bp.route('/mis-reservas')
 @login_required
