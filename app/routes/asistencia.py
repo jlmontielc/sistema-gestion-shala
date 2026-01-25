@@ -37,6 +37,6 @@ def tomar_asistencia(clase_id):
             reserva.estado = 'ASISTIDO' if estado == 'ASISTIO' else 'NO_SHOW'
 
         db.session.commit()
-        return "<h1>¡Asistencia Guardada Correctamente! ✅</h1><a href='/dashboard'>Volver al Dashboard</a>"
+        return "<h1>¡Asistencia Guardada Correctamente! ✅</h1><a href='/panel'>Volver al Panel</a>"
 
     return render_template('tomar_asistencia.html', clase=clase, reservas=reservas)

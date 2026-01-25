@@ -55,5 +55,5 @@ def comprar_paquete(id):
     <h1>¡Compra Exitosa! 🎉</h1>
     <p>Has comprado: {paquete.nombre}</p>
     <p>Tu nuevo saldo es: <strong>{current_user.saldo_clases} clases</strong>.</p>
-    <a href='/dashboard'>Volver al Dashboard</a>
+    <a href='/panel'>Volver al Panel</a>
     """

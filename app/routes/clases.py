@@ -42,7 +42,7 @@ def crear_clase():
         db.session.add(nueva_clase)
         db.session.commit()
 
-        return "¡Clase creada exitosamente! <a href='/dashboard'>Volver</a>"
+        return "¡Clase creada exitosamente! <a href='/panel'>Volver</a>"
 
     return render_template('crear_clase.html')
 
@@ -72,7 +72,7 @@ def listar_clases():
     </head>
     <body>
         <h1>📅 Calendario de Clases</h1>
-        <a href="/dashboard" class="btn btn-gray">⬅ Volver al Dashboard</a>
+        <a href="/panel" class="btn btn-gray">⬅ Volver al Panel</a>
         
         <table>
             <thead>

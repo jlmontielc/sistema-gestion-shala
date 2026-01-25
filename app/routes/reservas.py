@@ -21,7 +21,7 @@ def crear_reserva(clase_id):
         <p>No tienes clases disponibles en tu cuenta.</p>
         <p>Por favor, compra un paquete para continuar.</p>
         <br>
-        <a href='/paquetes/listar'>🛒 Ir a Comprar Paquetes</a> | <a href='/dashboard'>Volver</a>
+        <a href='/paquetes/listar'>🛒 Ir a Comprar Paquetes</a> | <a href='/panel'>Volver</a>
         """
 
     # 2. Verificar si la clase está llena (Lógica antigua)
