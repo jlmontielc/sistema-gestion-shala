@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Pago cancelado</title>
+  </head>
+  <body>
+    <h1>Pago cancelado</h1>
+    {% if paquete %}
+    <p>No se completó la compra de: <strong>{{ paquete.nombre }}</strong></p>
+    {% else %}
+    <p>No se completó la compra.</p>
+    {% endif %}
+    <a href="/paquetes/listar">Volver a los paquetes</a>
+  </body>
+</html>

@@ -1,7 +1,8 @@
 import pymysql
 pymysql.install_as_MySQLdb()
+import os
 
-from flask import Flask, app, redirect, url_for
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
@@ -12,6 +13,9 @@ def create_app():
 
     app.config['SECRET_KEY'] = 'ingsw25-26'
 
+    app.config['STRIPE_SECRET_KEY'] = 'claves_test_ingsw_51Qxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+    app.config['STRIPE_PUBLIC_KEY'] = 'clavep_test_ingsw_51Qxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         'mysql://root:WPfIdZtSOMtimSnSDNhKnKImtkpgZuSi@turntable.proxy.rlwy.net:56208/railway'
     )
@@ -19,16 +23,15 @@ def create_app():
 
     db.init_app(app)
 
-    from flask import redirect, url_for
-
     @app.route("/")
     def home():
-        return redirect(url_for('auth.register'))
+        # CORREGIR: cambiar 'auth.register' a 'auth.registro'
+        return redirect(url_for('auth.iniciar_sesion'))  # Mejor redirigir al login
 
+    # Importar y registrar blueprints
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
  
-    # --- modificacion prueba clases ---
     from app.routes.clases import clases_bp
     app.register_blueprint(clases_bp)
     
@@ -40,9 +43,13 @@ def create_app():
 
     from app.routes.paquetes import paquetes_bp
     app.register_blueprint(paquetes_bp)
-    # -------------------
+    
+    from app.routes.pagos import pagos_bp
+    app.register_blueprint(pagos_bp)
+    
+    # CORREGIR: Cambiar a ruta en español
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.iniciar_sesion'  # Cambiado de 'auth.login'
     login_manager.init_app(app)
 
     from app.models.usuario import Usuario

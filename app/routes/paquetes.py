@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from app import db
 from app.models.paquete import Paquete
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 paquetes_bp = Blueprint('paquetes', __name__, url_prefix='/paquetes')
 

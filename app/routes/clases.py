@@ -5,7 +5,7 @@ from datetime import datetime
 from app import db
 from app.models.clase import Clase
 from app.models.shala import Shala
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 clases_bp = Blueprint('clases', __name__, url_prefix='/clases')
 

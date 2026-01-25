@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel - Sistema de Gestión de Shalas</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .card { 
+            border: 1px solid #ccc; 
+            padding: 20px; 
+            margin: 15px 0; 
+            border-radius: 8px; 
+            background-color: #f9f9f9;
+        }
+        .btn { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+            margin: 5px;
+        }
+        .btn-danger { background: #dc3545; }
+        .btn-success { background: #28a745; }
+        .btn-info { background: #17a2b8; }
+        
+        .user-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .saldo {
+            font-size: 1.2em;
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧘 Bienvenido/a, {{ user.nombre }}</h1>
+    
+    <div class="user-info">
+        <p><strong>Rol:</strong> {{ user.rol }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        {% if user.rol == 'YOGUI' %}
+            <p><strong>Saldo de clases:</strong> <span class="saldo">{{ user.saldo_clases }} clases</span></p>
+        {% endif %}
+    </div>
+    <hr>
+
+    {% if user.rol in ['INSTRUCTOR', 'ADMIN'] %}
+    <div class="card">
+        <h3>👨‍🏫 Panel de Instructor/Administrador</h3>
+        <p>Gestiona tus horarios, alumnos y asistencia.</p>
+        <a href="{{ url_for('clases.crear_clase') }}" class="btn">📅 Programar Nueva Clase</a>
+        <a href="{{ url_for('clases.listar_clases') }}" class="btn">📋 Ver Calendario de Clases</a>
+        {% if user.rol == 'ADMIN' %}
+            <a href="{{ url_for('paquetes.crear_paquete') }}" class="btn btn-success">📦 Crear Paquete</a>
+            <a href="{{ url_for('paquetes.listar_paquetes') }}" class="btn btn-info">💰 Ver Paquetes</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if user.rol == 'YOGUI' %}
+    <div class="card">
+        <h3>🧘‍♀️ Panel de Alumno (Yogui)</h3>
+        <p>Reserva tu lugar en el mat.</p>
+        <a href="{{ url_for('clases.listar_clases') }}" class="btn">📅 Ver Calendario y Reservar</a>
+        <a href="{{ url_for('reservas.mis_reservas') }}" class="btn">🎫 Ver Mis Reservas</a>
+        <a href="{{ url_for('paquetes.listar_paquetes') }}" class="btn btn-success">🛒 Comprar Paquetes</a>
+    </div>
+    {% endif %}
+
+    <br><br>
+    <a href="{{ url_for('auth.cerrar_sesion') }}" class="btn btn-danger">🚪 Cerrar Sesión</a>
+</body>
+</html>

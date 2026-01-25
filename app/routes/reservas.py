@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.models.reserva import Reserva
 from app.models.clase import Clase
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 reservas_bp = Blueprint('reservas', __name__, url_prefix='/reservas')
 

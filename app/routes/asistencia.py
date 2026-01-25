@@ -5,7 +5,7 @@ from app import db
 from app.models.clase import Clase
 from app.models.reserva import Reserva
 from app.models.asistencia import Asistencia
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 asistencia_bp = Blueprint('asistencia', __name__, url_prefix='/asistencia')
 

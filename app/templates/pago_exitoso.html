@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Pago exitoso</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f0f8f0;
+        }
+        .success-icon {
+            font-size: 48px;
+            color: #28a745;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+        <div class="success-icon">✅</div>
+        <h1>¡Pago exitoso! 🎉</h1>
+        
+        {% if paquete %}
+            <p>Has comprado: <strong>{{ paquete.nombre }}</strong></p>
+            <p>Sesiones agregadas: <strong>{{ paquete.sesiones_incluidas }}</strong></p>
+            <p>Tu nuevo saldo de clases: <strong>{{ current_user.saldo_clases }}</strong></p>
+        {% else %}
+            <p>Tu pago se ha procesado correctamente.</p>
+        {% endif %}
+        
+        <br>
+        <a href="{{ url_for('auth.panel') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Volver al panel
+        </a>
+    </div>
+  </body>
+</html>
