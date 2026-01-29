@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>🔍 Buscar Shalas Cercanas</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .search-form {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .search-form label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        .search-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn-buscar {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .shala-card {
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .shala-card h4 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        .distancia {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        .info-shala {
+            margin: 10px 0;
+            color: #6c757d;
+        }
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .map-container {
+            height: 300px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Buscar Shalas Cercanas</h1>
+    <a href="{{ url_for('auth.panel') }}">⬅ Volver al Panel</a>
+    <hr>
+    
+    <div class="search-form">
+        <h3>Introduce tu ubicación</h3>
+        <form method="GET">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label for="lat">Latitud:</label>
+                    <input type="text" id="lat" name="lat" value="{{ lat if lat else '' }}" 
+                           placeholder="Ej: 10.123456" required>
+                </div>
+                <div>
+                    <label for="lng">Longitud:</label>
+                    <input type="text" id="lng" name="lng" value="{{ lng if lng else '' }}" 
+                           placeholder="Ej: -66.123456" required>
+                </div>
+            </div>
+            
+            <label for="radio">Radio de búsqueda (km):</label>
+            <input type="range" id="radio" name="radio" min="1" max="50" value="{{ radio if radio else 10 }}"
+                   oninput="document.getElementById('radioValue').textContent = this.value + ' km'">
+            <div id="radioValue" style="text-align: center; font-weight: bold; margin: 10px 0;">
+                {{ radio if radio else 10 }} km
+            </div>
+            
+            <button type="submit" class="btn-buscar">🔍 Buscar Shalas Cercanas</button>
+        </form>
+        
+        <p style="margin-top: 15px; color: #6c757d; font-size: 0.9em;">
+            <strong>💡 Consejo:</strong> Puedes obtener tus coordenadas en 
+            <a href="https://www.google.com/maps" target="_blank">Google Maps</a> haciendo clic derecho 
+            en cualquier lugar y seleccionando "¿Qué hay aquí?".
+        </p>
+    </div>
+    
+    {% if lat and lng %}
+        <h3>Resultados para ubicación ({{ lat }}, {{ lng }})</h3>
+        
+        {% if shalas %}
+            <div class="map-container">
+                🗺️ Mapa interactivo (integrado con Google Maps API)
+                <br><small>Para implementar: Usar API de Google Maps con marcadores</small>
+            </div>
+            
+            <p>Se encontraron <strong>{{ shalas|length }}</strong> shala(s) cerca de ti (radio: {{ radio }} km):</p>
+            
+            {% for shala in shalas %}
+            <div class="shala-card">
+                <h4>{{ shala.nombre }}</h4>
+                <div class="distancia">📍 {{ shala.distancia_simulada }}</div>
+                
+                <div class="info-shala">
+                    <p><strong>📍 Dirección:</strong> {{ shala.direccion }}</p>
+                    <p><strong>📞 Teléfono:</strong> {{ shala.telefono }}</p>
+                </div>
+                
+                <a href="{{ url_for('clases.listar_clases') }}" style="color: #007bff; text-decoration: none;">
+                    👉 Ver clases en esta shala
+                </a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-results">
+                <h3>📍 No se encontraron shalas en el área especificada</h3>
+                <p>Intenta ampliar el radio de búsqueda o verifica las coordenadas.</p>
+                <p>También puedes <a href="{{ url_for('clases.listar_clases') }}">ver todas las clases disponibles</a>.</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="no-results">
+            <h3>📍 Introduce tu ubicación para comenzar</h3>
+            <p>Usa el formulario superior para buscar shalas cercanas a ti.</p>
+            <p>Esta funcionalidad te permite encontrar centros de yoga cerca de tu ubicación actual.</p>
+        </div>
+    {% endif %}
+</body>
+<script>
+    document.getElementById('radio').addEventListener('input', function() {
+        document.getElementById('radioValue').textContent = this.value + ' km';
+    });
+</script>
+</html>

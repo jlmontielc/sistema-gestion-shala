@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>🏠 Crear Nueva Shala</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #495057;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+        .coord-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .info-box {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>🏠 Crear Nueva Shala (Centro de Yoga)</h1>
+        <a href="{{ url_for('shalas.listar_shalas') }}" class="btn-cancel">⬅ Cancelar y Volver</a>
+        <hr>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="padding: 10px; margin: 10px 0; border-radius: 5px; 
+                                background-color: {% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+                                color: {% if category == 'error' %}#721c24{% else %}#155724{% endif %};
+                                border: 1px solid {% if category == 'error' %}#f5c6cb{% else %}#c3e6cb{% endif %};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="info-box">
+            <h4>💡 Información importante</h4>
+            <p>Las shalas son los centros de yoga que gestionarás en el sistema. 
+               Cada shala puede tener múltiples clases, instructores y paquetes asociados.</p>
+        </div>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="nombre" class="required">Nombre de la Shala</label>
+                <input type="text" id="nombre" name="nombre" required 
+                       placeholder="Ej: Shala del Sol, Centro de Yoga Luna, etc.">
+            </div>
+            
+            <div class="form-group">
+                <label for="direccion" class="required">Dirección</label>
+                <input type="text" id="direccion" name="direccion" required 
+                       placeholder="Ej: Calle Principal #123, Ciudad">
+            </div>
+            
+            <div class="coord-group">
+                <div class="form-group">
+                    <label for="lat">Latitud (opcional)</label>
+                    <input type="number" step="any" id="lat" name="lat" 
+                           placeholder="Ej: 10.123456" min="-90" max="90">
+                    <small style="color: #6c757d;">Para búsqueda por ubicación</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lng">Longitud (opcional)</label>
+                    <input type="number" step="any" id="lng" name="lng" 
+                           placeholder="Ej: -66.123456" min="-180" max="180">
+                    <small style="color: #6c757d;">Para búsqueda por ubicación</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input type="text" id="telefono" name="telefono" 
+                       placeholder="Ej: +58 412-1234567">
+            </div>
+            
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" 
+                          placeholder="Describe tu shala, tipos de yoga que ofreces, ambiente, etc."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="logo_url">URL del Logo (opcional)</label>
+                <input type="url" id="logo_url" name="logo_url" 
+                       placeholder="https://ejemplo.com/logo.png">
+                <small style="color: #6c757d;">URL de la imagen del logo de la shala</small>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button type="submit" class="btn-submit">💾 Guardar Shala</button>
+                <a href="{{ url_for('shalas.listar_shalas') }}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+        
+        <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
+            <h4>📍 ¿Cómo obtener coordenadas?</h4>
+            <p>1. Ve a <a href="https://www.google.com/maps" target="_blank">Google Maps</a></p>
+            <p>2. Busca la dirección de tu shala</p>
+            <p>3. Haz clic derecho en el lugar exacto y selecciona "¿Qué hay aquí?"</p>
+            <p>4. Copia las coordenadas que aparecen en la parte inferior</p>
+        </div>
+    </div>
+</body>
+</html>

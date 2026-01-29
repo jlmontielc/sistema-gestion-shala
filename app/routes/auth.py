@@ -15,12 +15,10 @@ def registro():
         password = request.form.get('password')
         rol = request.form.get('rol')
 
-        # Validación mínima
         if not nombre or not email or not password or not rol:
             flash("Datos incompletos", "error")
             return redirect(url_for('auth.registro'))
 
-        # Verificar si el email ya existe
         usuario_existente = Usuario.query.filter_by(email=email).first()
         if usuario_existente:
             flash("El correo electrónico ya está registrado", "error")
@@ -64,25 +62,25 @@ def iniciar_sesion():
 @auth_bp.route('/panel')
 @login_required
 def panel():
-    return render_template('panel.html', user=current_user)  # ✅ Ya está bien
+    return render_template('panel.html', usuario=current_user)  # ✅ CAMBIADO: user → usuario
 
 @auth_bp.route('/administracion')
 @login_required
 @role_required('ADMIN')
 def administracion():
-    return render_template('administracion.html')
+    return "Panel de administración"
 
 @auth_bp.route('/gestion-clases')
 @login_required
 @role_required('ADMIN', 'INSTRUCTOR')
 def gestion_clases():
-    return render_template('gestion_clases.html')
+    return "Gestión de clases"
 
 @auth_bp.route('/mis-reservas')
 @login_required
 @role_required('YOGUI')
 def mis_reservas():
-    return render_template('mis_reservas.html')
+    return "Mis reservas"
 
 @auth_bp.route('/cerrar-sesion')
 @login_required

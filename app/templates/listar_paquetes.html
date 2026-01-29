@@ -40,10 +40,8 @@
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Descripción</th>
                 <th>Clases Incluidas</th>
                 <th>Precio</th>
-                <th>Validez (días)</th>
                 <th>Acción</th>
             </tr>
         </thead>
@@ -51,18 +49,15 @@
             {% for p in paquetes %}
             <tr>
                 <td><strong>{{ p.nombre }}</strong></td>
-                <td>{{ p.descripcion or 'Sin descripción' }}</td>
                 <td>{{ p.sesiones_incluidas }} Clases</td>
                 <td>${{ p.precio }}</td>
-                <td>{{ p.validez_dias }} días</td>
                 <td>
                     {% if current_user.rol == 'YOGUI' %}
+                        <!-- ✅ CORREGIDO: crear_sesion_pago (no create_checkout_session) -->
                         <a href="{{ url_for('pagos.crear_sesion_pago', paquete_id=p.id) }}" 
                             class="btn-comprar">
                             💳 Comprar Ahora
                         </a>
-                    {% elif current_user.rol == 'ADMIN' %}
-                        <span style="color: #6c757d;">Paquete activo</span>
                     {% else %}
                         <span style="color: grey;">Vista Previa</span>
                     {% endif %}
@@ -70,7 +65,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="6" style="text-align: center; padding: 20px;">
+                <td colspan="4" style="text-align: center; padding: 20px;">
                     No hay paquetes creados todavía.
                 </td>
             </tr>
@@ -85,6 +80,5 @@
             ➕ Crear Nuevo Paquete
         </a>
     {% endif %}
-    
 </body>
 </html>

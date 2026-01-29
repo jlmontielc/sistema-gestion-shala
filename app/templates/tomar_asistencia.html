@@ -11,7 +11,8 @@
 
     {% if reservas|length == 0 %}
         <p>⚠️ No hay alumnos inscritos en esta clase.</p>
-        <a href="/panel">Volver</a>
+        <!-- ✅ CORREGIDO: auth.panel -->
+        <a href="{{ url_for('auth.panel') }}">Volver</a>
     {% else %}
         <form method="POST">
             <table border="1" cellpadding="10">

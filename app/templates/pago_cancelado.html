@@ -3,14 +3,39 @@
   <head>
     <meta charset="utf-8">
     <title>Pago cancelado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #fff0f0;
+        }
+        .cancel-icon {
+            font-size: 48px;
+            color: #dc3545;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+    </style>
   </head>
   <body>
-    <h1>Pago cancelado</h1>
-    {% if paquete %}
-    <p>No se completó la compra de: <strong>{{ paquete.nombre }}</strong></p>
-    {% else %}
-    <p>No se completó la compra.</p>
-    {% endif %}
-    <a href="/paquetes/listar">Volver a los paquetes</a>
+    <div class="container">
+        <div class="cancel-icon">❌</div>
+        <h1>Pago cancelado</h1>
+        {% if paquete %}
+        <p>No se completó la compra de: <strong>{{ paquete.nombre }}</strong></p>
+        {% else %}
+        <p>No se completó la compra.</p>
+        {% endif %}
+        <!-- ✅ CORREGIDO: paquetes.listar_paquetes -->
+        <a href="{{ url_for('paquetes.listar_paquetes') }}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            Volver a los paquetes
+        </a>
+    </div>
   </body>
 </html>

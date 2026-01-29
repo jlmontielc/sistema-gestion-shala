@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>📋 Lista de Shalas</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn-create {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .shala-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .shala-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .shala-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .shala-title {
+            color: #007bff;
+            margin-top: 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        .shala-info {
+            margin: 15px 0;
+            color: #6c757d;
+        }
+        .shala-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-action {
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        .btn-detail { background-color: #007bff; color: white; }
+        .btn-edit { background-color: #ffc107; color: black; }
+        .btn-delete { background-color: #dc3545; color: white; }
+        .no-shalas {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #dee2e6;
+        }
+        .coord-badge {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin: 5px 5px 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <h1>🏠 Shalas (Centros de Yoga)</h1>
+        <div>
+            <a href="{{ url_for('auth.panel') }}" class="btn-back">⬅ Panel Principal</a>
+            {% if current_user.rol == 'ADMIN' %}
+                <a href="{{ url_for('shalas.crear_shala') }}" class="btn-create">➕ Crear Nueva Shala</a>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 10px; margin: 10px 0; border-radius: 5px; 
+                            background-color: {% if category == 'error' %}#f8d7da{% else %}#d4edda{% endif %};
+                            color: {% if category == 'error' %}#721c24{% else %}#155724{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% if shalas %}
+        <p>Mostrando {{ shalas|length }} shala(s) en el sistema:</p>
+        
+        <div class="shala-grid">
+            {% for shala in shalas %}
+            <div class="shala-card">
+                <h3 class="shala-title">{{ shala.nombre }}</h3>
+                
+                <div class="shala-info">
+                    <p><strong>📍 Dirección:</strong> {{ shala.direccion }}</p>
+                    <p><strong>📞 Teléfono:</strong> {{ shala.telefono or 'No registrado' }}</p>
+                    
+                    {% if shala.lat and shala.lng %}
+                        <div>
+                            <span class="coord-badge">Lat: {{ shala.lat }}</span>
+                            <span class="coord-badge">Lng: {{ shala.lng }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if shala.descripcion %}
+                        <p><strong>📝 Descripción:</strong> {{ shala.descripcion[:100] }}{% if shala.descripcion|length > 100 %}...{% endif %}</p>
+                    {% endif %}
+                </div>
+                
+                <div class="shala-actions">
+                    <a href="{{ url_for('shalas.detalle_shala', id=shala.id) }}" class="btn-action btn-detail">
+                        👁️ Ver Detalle
+                    </a>
+                    
+                    {% if current_user.rol == 'ADMIN' %}
+                        <a href="{{ url_for('shalas.editar_shala', id=shala.id) }}" class="btn-action btn-edit">
+                            ✏️ Editar
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-shalas">
+            <h3>🏠 No hay shalas registradas</h3>
+            <p>Comienza creando la primera shala en el sistema.</p>
+            {% if current_user.rol == 'ADMIN' %}
+                <a href="{{ url_for('shalas.crear_shala') }}" class="btn-create" style="margin-top: 20px;">
+                    ➕ Crear Primera Shala
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    {% if shalas and shalas|length > 0 %}
+        <div style="margin-top: 30px; text-align: center; color: #6c757d;">
+            <p>📊 Total de shalas: {{ shalas|length }}</p>
+        </div>
+    {% endif %}
+</body>
+</html>

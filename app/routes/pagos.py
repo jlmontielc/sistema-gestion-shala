@@ -22,7 +22,7 @@ def iniciar_pago(clase_id):
                 'product_data': {
                     'name': clase.titulo,
                 },
-                'unit_amount': int(getattr(clase, 'precio', 0) * 100),  # en centavos (0 si no existe)
+                'unit_amount': int(getattr(clase, 'precio', 0) * 100),
             },
             'quantity': 1,
         }],
@@ -37,9 +37,9 @@ def iniciar_pago(clase_id):
 
     return redirect(session.url)
 
-@pagos_bp.route('/crear-sesion-pago')
+@pagos_bp.route('/crear-sesion-pago')  # ✅ Español
 @login_required
-def crear_sesion_pago():
+def crear_sesion_pago():  # ✅ Español
     paquete_id = request.args.get('paquete_id')
     if not paquete_id:
         abort(400)
@@ -71,9 +71,9 @@ def crear_sesion_pago():
 
     return redirect(session.url, code=303)
 
-@pagos_bp.route('/pago-exitoso')
+@pagos_bp.route('/pago-exitoso')  # ✅ Español
 @login_required
-def pago_exitoso():
+def pago_exitoso():  # ✅ Español
     session_id = request.args.get('session_id')
     if not session_id:
         flash('No se recibió información de pago.', 'danger')
@@ -98,7 +98,6 @@ def pago_exitoso():
     if amount_cents:
         monto = Decimal(amount_cents) / Decimal(100)
 
-    # Crear registro de pago
     pago = Pago(
         yogui_id=current_user.id,
         paquete_id=metadata.get('paquete_id'),
@@ -110,16 +109,14 @@ def pago_exitoso():
     db.session.add(pago)
     db.session.commit()
 
-    # Si fue compra de paquete, acreditar sesiones
     if metadata.get('paquete_id'):
         paquete = Paquete.query.get(metadata.get('paquete_id'))
         if paquete:
             current_user.saldo_clases = (current_user.saldo_clases or 0) + (paquete.sesiones_incluidas or 0)
             db.session.commit()
         flash('Compra de paquete completada. Gracias.', 'success')
-        return render_template('pago_exitoso.html')
+        return render_template('pago_exitoso.html', paquete=paquete, saldo=current_user.saldo_clases)
 
-    # Si fue pago de clase, crear reserva ligada al pago
     clase_id = metadata.get('clase_id')
     if clase_id:
         reserva = Reserva(
@@ -133,11 +130,10 @@ def pago_exitoso():
         flash('Reserva confirmada. Nos vemos en clase.', 'success')
         return render_template('pago_exitoso.html')
 
-    # Si no hay metadata conocida
     flash('Pago procesado, pero no se pudo asociar a ninguna acción.', 'warning')
     return render_template('pago_exitoso.html')
 
-@pagos_bp.route('/pago-cancelado')
+@pagos_bp.route('/pago-cancelado')  # ✅ Español
 @login_required
-def pago_cancelado():
+def pago_cancelado():  # ✅ Español
     return render_template('pago_cancelado.html')

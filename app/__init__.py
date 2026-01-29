@@ -12,10 +12,8 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 'ingsw25-26'
-
-    app.config['STRIPE_SECRET_KEY'] = 'claves_test_ingsw_51Qxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-    app.config['STRIPE_PUBLIC_KEY'] = 'clavep_test_ingsw_51Qxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
-
+    app.config['STRIPE_SECRET_KEY'] = 'sk_test_51SsJBOLcnrKrJeA63aAbKy7BRvZobSApPItz5Wz4TunsF6bhaQbOKwqLJ99KUhdLTAjwsMKjxRAwaZPlC1kJV5fL00Au3aMmkf'
+    app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51SsJBOLcnrKrJeA6pIdtW8IgrF2SoZ7DyvCCzyDUF2e2QfXh5JQZ8ZeNNSF7RA9lOUt1VF3wG0X7rxeuJnPoBmG700cOnxIVQo'
     app.config['SQLALCHEMY_DATABASE_URI'] = (
         'mysql://root:WPfIdZtSOMtimSnSDNhKnKImtkpgZuSi@turntable.proxy.rlwy.net:56208/railway'
     )
@@ -25,10 +23,9 @@ def create_app():
 
     @app.route("/")
     def home():
-        # CORREGIR: cambiar 'auth.register' a 'auth.registro'
-        return redirect(url_for('auth.iniciar_sesion'))  # Mejor redirigir al login
+        return redirect(url_for('auth.iniciar_sesion'))  # ✅ Español
 
-    # Importar y registrar blueprints
+    # Registrar blueprints
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
  
@@ -46,10 +43,16 @@ def create_app():
     
     from app.routes.pagos import pagos_bp
     app.register_blueprint(pagos_bp)
-    
-    # CORREGIR: Cambiar a ruta en español
+
+    from app.routes.analisis import analisis_bp
+    app.register_blueprint(analisis_bp)
+
+    from app.routes.shalas import shalas_bp
+    app.register_blueprint(shalas_bp)
+
+    # ✅ CORREGIDO: Español
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.iniciar_sesion'  # Cambiado de 'auth.login'
+    login_manager.login_view = 'auth.iniciar_sesion'  # ✅ Español
     login_manager.init_app(app)
 
     from app.models.usuario import Usuario
