@@ -1,6 +1,8 @@
+
 import pymysql
 pymysql.install_as_MySQLdb()
 import os
+from dotenv import load_dotenv
 
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -8,16 +10,16 @@ from flask_login import LoginManager
 
 db = SQLAlchemy()
 
+
 def create_app():
+    load_dotenv()
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = 'ingsw25-26'
-    app.config['STRIPE_SECRET_KEY'] = 'sk_test_51SsJBOLcnrKrJeA63aAbKy7BRvZobSApPItz5Wz4TunsF6bhaQbOKwqLJ99KUhdLTAjwsMKjxRAwaZPlC1kJV5fL00Au3aMmkf'
-    app.config['STRIPE_PUBLIC_KEY'] = 'pk_test_51SsJBOLcnrKrJeA6pIdtW8IgrF2SoZ7DyvCCzyDUF2e2QfXh5JQZ8ZeNNSF7RA9lOUt1VF3wG0X7rxeuJnPoBmG700cOnxIVQo'
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        'mysql://root:WPfIdZtSOMtimSnSDNhKnKImtkpgZuSi@turntable.proxy.rlwy.net:56208/railway'
-    )
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config['STRIPE_SECRET_KEY'] = os.environ.get('STRIPE_SECRET_KEY')
+    app.config['STRIPE_PUBLIC_KEY'] = os.environ.get('STRIPE_PUBLIC_KEY')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS', 'False') == 'True'
 
     db.init_app(app)
 
