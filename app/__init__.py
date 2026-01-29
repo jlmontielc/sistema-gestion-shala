@@ -25,9 +25,8 @@ def create_app():
 
     @app.route("/")
     def home():
-        return redirect(url_for('auth.iniciar_sesion'))  # ✅ Español
+        return redirect(url_for('auth.iniciar_sesion')) 
 
-    # Registrar blueprints
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
  
@@ -52,9 +51,8 @@ def create_app():
     from app.routes.shalas import shalas_bp
     app.register_blueprint(shalas_bp)
 
-    # ✅ CORREGIDO: Español
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.iniciar_sesion'  # ✅ Español
+    login_manager.login_view = 'auth.iniciar_sesion' 
     login_manager.init_app(app)
 
     from app.models.usuario import Usuario
