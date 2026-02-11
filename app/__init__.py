@@ -2,7 +2,7 @@
 import pymysql
 pymysql.install_as_MySQLdb()
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
