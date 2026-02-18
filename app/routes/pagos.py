@@ -37,9 +37,9 @@ def iniciar_pago(clase_id):
 
     return redirect(session.url)
 
-@pagos_bp.route('/crear-sesion-pago')  # ✅ Español
+@pagos_bp.route('/crear-sesion-pago')
 @login_required
-def crear_sesion_pago():  # ✅ Español
+def crear_sesion_pago():
     paquete_id = request.args.get('paquete_id')
     if not paquete_id:
         abort(400)
@@ -71,9 +71,9 @@ def crear_sesion_pago():  # ✅ Español
 
     return redirect(session.url, code=303)
 
-@pagos_bp.route('/pago-exitoso')  # ✅ Español
+@pagos_bp.route('/pago-exitoso') 
 @login_required
-def pago_exitoso():  # ✅ Español
+def pago_exitoso(): 
     session_id = request.args.get('session_id')
     if not session_id:
         flash('No se recibió información de pago.', 'danger')
@@ -133,7 +133,7 @@ def pago_exitoso():  # ✅ Español
     flash('Pago procesado, pero no se pudo asociar a ninguna acción.', 'warning')
     return render_template('pago_exitoso.html')
 
-@pagos_bp.route('/pago-cancelado')  # ✅ Español
+@pagos_bp.route('/pago-cancelado') 
 @login_required
-def pago_cancelado():  # ✅ Español
+def pago_cancelado(): 
     return render_template('pago_cancelado.html')

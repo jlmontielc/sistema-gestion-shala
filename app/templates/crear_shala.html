@@ -107,23 +107,7 @@
                 <input type="text" id="direccion" name="direccion" required 
                        placeholder="Ej: Calle Principal #123, Ciudad">
             </div>
-            
-            <div class="coord-group">
-                <div class="form-group">
-                    <label for="lat">Latitud (opcional)</label>
-                    <input type="number" step="any" id="lat" name="lat" 
-                           placeholder="Ej: 10.123456" min="-90" max="90">
-                    <small style="color: #6c757d;">Para búsqueda por ubicación</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="lng">Longitud (opcional)</label>
-                    <input type="number" step="any" id="lng" name="lng" 
-                           placeholder="Ej: -66.123456" min="-180" max="180">
-                    <small style="color: #6c757d;">Para búsqueda por ubicación</small>
-                </div>
-            </div>
-            
+        
             <div class="form-group">
                 <label for="telefono">Teléfono</label>
                 <input type="text" id="telefono" name="telefono" 
@@ -148,14 +132,6 @@
                 <a href="{{ url_for('shalas.listar_shalas') }}" class="btn-cancel">Cancelar</a>
             </div>
         </form>
-        
-        <div style="margin-top: 30px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
-            <h4>📍 ¿Cómo obtener coordenadas?</h4>
-            <p>1. Ve a <a href="https://www.google.com/maps" target="_blank">Google Maps</a></p>
-            <p>2. Busca la dirección de tu shala</p>
-            <p>3. Haz clic derecho en el lugar exacto y selecciona "¿Qué hay aquí?"</p>
-            <p>4. Copia las coordenadas que aparecen en la parte inferior</p>
-        </div>
     </div>
 </body>
 </html>
