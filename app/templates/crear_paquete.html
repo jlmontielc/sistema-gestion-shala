@@ -7,6 +7,14 @@
 <body>
     <h2>📦 Crear Nuevo Paquete de Clases</h2>
     <form method="POST">
+        <label>Sede a la que pertenece el paquete:</label><br>
+        <select name="shala_id" required>
+            <option value="">Selecciona la sede...</option>
+            {% for shala in shalas %}
+                <option value="{{ shala.id }}">{{ shala.nombre }}</option>
+            {% endfor %}
+        </select><br><br>
+        <label>Nombre del Paquete:</label><br>
         <label>Nombre del Paquete:</label><br>
         <input type="text" name="nombre" placeholder="Ej: Bono 10 Clases" required><br><br>
         
@@ -19,6 +27,6 @@
         <button type="submit">💾 Guardar Paquete</button>
     </form>
     <br>
-    <a href="/dashboard">Cancelar y volver</a>
+    <a href="/panel">Cancelar y volver</a>
 </body>
 </html>

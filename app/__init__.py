@@ -1,34 +1,35 @@
+
 import pymysql
 pymysql.install_as_MySQLdb()
+import os
+from dotenv import load_dotenv # type: ignore
 
-from flask import Flask, app, redirect, url_for
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 
 db = SQLAlchemy()
 
+
 def create_app():
+    load_dotenv()
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = 'ingsw25-26'
-
-    app.config['SQLALCHEMY_DATABASE_URI'] = (
-        'mysql://root:WPfIdZtSOMtimSnSDNhKnKImtkpgZuSi@turntable.proxy.rlwy.net:56208/railway'
-    )
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config['STRIPE_SECRET_KEY'] = os.environ.get('STRIPE_SECRET_KEY')
+    app.config['STRIPE_PUBLIC_KEY'] = os.environ.get('STRIPE_PUBLIC_KEY')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = os.environ.get('SQLALCHEMY_TRACK_MODIFICATIONS', 'False') == 'True'
 
     db.init_app(app)
 
-    from flask import redirect, url_for
-
     @app.route("/")
     def home():
-        return redirect(url_for('auth.register'))
+        return redirect(url_for('auth.iniciar_sesion')) 
 
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
  
-    # --- modificacion prueba clases ---
     from app.routes.clases import clases_bp
     app.register_blueprint(clases_bp)
     
@@ -40,9 +41,18 @@ def create_app():
 
     from app.routes.paquetes import paquetes_bp
     app.register_blueprint(paquetes_bp)
-    # -------------------
+    
+    from app.routes.pagos import pagos_bp
+    app.register_blueprint(pagos_bp)
+
+    from app.routes.analisis import analisis_bp
+    app.register_blueprint(analisis_bp)
+
+    from app.routes.shalas import shalas_bp
+    app.register_blueprint(shalas_bp)
+
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.iniciar_sesion' 
     login_manager.init_app(app)
 
     from app.models.usuario import Usuario

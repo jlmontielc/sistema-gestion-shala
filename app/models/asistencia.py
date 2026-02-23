@@ -7,4 +7,5 @@ class Asistencia(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reserva_id = db.Column(db.Integer, db.ForeignKey('reserva.id'))
     estado_asistencia = db.Column(db.Enum('ASISTIO', 'FALTO'))
+    comentario = db.Column(db.Text, nullable=True)
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)

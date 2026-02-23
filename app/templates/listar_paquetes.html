@@ -3,15 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <title>Paquetes Disponibles</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .btn-comprar {
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
     <h2>📦 Paquetes y Precios</h2>
-    <a href="/dashboard">⬅ Volver al Dashboard</a>
+    <a href="{{ url_for('auth.panel') }}">⬅ Volver al Panel</a>
     <hr>
 
-    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+    <table>
         <thead>
-            <tr style="background-color: #f2f2f2;">
+            <tr>
                 <th>Nombre</th>
                 <th>Clases Incluidas</th>
                 <th>Precio</th>
@@ -26,9 +53,9 @@
                 <td>${{ p.precio }}</td>
                 <td>
                     {% if current_user.rol == 'YOGUI' %}
-                        <a href="{{ url_for('paquetes.comprar_paquete', id=p.id) }}" 
-                           style="background-color: #28a745; color: white; padding: 5px 10px; text-decoration: none; border-radius: 5px;">
-                           💳 Comprar Ahora
+                        <a href="{{ url_for('pagos.crear_sesion_pago', paquete_id=p.id) }}" 
+                            class="btn-comprar">
+                            💳 Comprar Ahora
                         </a>
                     {% else %}
                         <span style="color: grey;">Vista Previa</span>
@@ -37,7 +64,9 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="4">No hay paquetes creados todavía.</td>
+                <td colspan="4" style="text-align: center; padding: 20px;">
+                    No hay paquetes creados todavía.
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -46,8 +75,9 @@
     <br>
     
     {% if current_user.rol == 'ADMIN' %}
-        <a href="{{ url_for('paquetes.crear_paquete') }}">➕ Crear Nuevo Paquete</a>
+        <a href="{{ url_for('paquetes.crear_paquete') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            ➕ Crear Nuevo Paquete
+        </a>
     {% endif %}
-    
 </body>
 </html>

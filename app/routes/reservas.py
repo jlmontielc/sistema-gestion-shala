@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app import db
 from app.models.reserva import Reserva
 from app.models.clase import Clase
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 reservas_bp = Blueprint('reservas', __name__, url_prefix='/reservas')
 
@@ -21,7 +21,7 @@ def crear_reserva(clase_id):
         <p>No tienes clases disponibles en tu cuenta.</p>
         <p>Por favor, compra un paquete para continuar.</p>
         <br>
-        <a href='/paquetes/listar'>🛒 Ir a Comprar Paquetes</a> | <a href='/dashboard'>Volver</a>
+        <a href='/paquetes/listar'>🛒 Ir a Comprar Paquetes</a> | <a href='/panel'>Volver</a>
         """
 
     # 2. Verificar si la clase está llena (Lógica antigua)
@@ -66,6 +66,42 @@ def mis_reservas():
     
     html = "<h1>Mis Reservas</h1><ul>"
     for r in mis_reservas:
-        html += f"<li>{r.clase.titulo} - {r.clase.fecha_hora} ({r.estado})</li>"
-    html += "</ul><a href='/clases/listar'>Reservar más clases</a>"
+        # Si la reserva está activa, mostramos el botón de cancelar
+        boton_cancelar = ""
+        if r.estado == 'RESERVADO':
+            boton_cancelar = f" <a href='/reservas/cancelar/{r.id}' style='color: white; background-color: red; padding: 2px 5px; text-decoration: none; border-radius: 3px; font-size: 12px;'>❌ Cancelar</a>"
+            
+        html += f"<li>{r.clase.titulo} - {r.clase.fecha_hora.strftime('%d/%m/%Y %H:%M')} ({r.estado}){boton_cancelar}</li><br>"
+        
+    html += "</ul><a href='/clases/listar'>Reservar más clases</a> | <a href='/panel'>Volver al Panel</a>"
     return html
+
+@reservas_bp.route('/cancelar/<int:reserva_id>')
+@login_required
+@role_required('YOGUI')
+def cancelar_reserva(reserva_id):
+    # 1. Buscamos la reserva en la base de datos
+    reserva = Reserva.query.get_or_404(reserva_id)
+    
+    # 2. Seguridad: Verificamos que sea del usuario actual
+    if reserva.yogui_id != current_user.id:
+        return "<h1>Error: Esta reserva no es tuya 🚫</h1><a href='/reservas/mis-reservas'>Volver</a>"
+        
+    # 3. Seguridad: Evitar que cancele algo ya cancelado y gane saldo infinito
+    if reserva.estado == 'CANCELADO':
+        return "<h1>La reserva ya estaba cancelada.</h1><a href='/reservas/mis-reservas'>Volver</a>"
+
+    # 4. HACEMOS EL REEMBOLSO:
+    reserva.estado = 'CANCELADO'          # Cambiamos el estado
+    current_user.saldo_clases += 1        # Le devolvemos 1 clase a su cartera
+
+    # Guardamos los cambios en la base de datos
+    db.session.commit()
+    
+    return f"""
+    <h1>¡Reserva Cancelada! 🛑</h1>
+    <p>Se ha devuelto 1 clase a tu cuenta.</p>
+    <p>Tu saldo actual es: <strong>{current_user.saldo_clases} clases</strong>.</p>
+    <br>
+    <a href='/reservas/mis-reservas'>Volver a mis reservas</a> | <a href='/panel'>Volver al panel</a>
+    """

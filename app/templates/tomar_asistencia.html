@@ -11,15 +11,15 @@
 
     {% if reservas|length == 0 %}
         <p>⚠️ No hay alumnos inscritos en esta clase.</p>
-        <a href="/dashboard">Volver</a>
+        <a href="{{ url_for('auth.panel') }}">Volver</a>
     {% else %}
         <form method="POST">
-            <table border="1" cellpadding="10">
+            <table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse;">
                 <thead>
-                    <tr>
+                    <tr style="background-color: #f2f2f2;">
                         <th>Alumno (ID)</th>
                         <th>¿Asistió?</th>
-                    </tr>
+                        <th>📝 Notas de Progreso</th> </tr>
                 </thead>
                 <tbody>
                     {% for reserva in reservas %}
@@ -27,6 +27,12 @@
                         <td>Alumno #{{ reserva.yogui_id }}</td>
                         <td style="text-align: center;">
                             <input type="checkbox" name="asistencia_{{ reserva.id }}" checked>
+                        </td>
+                        <td>
+                            <input type="text" 
+                                   name="comentario_{{ reserva.id }}" 
+                                   placeholder="Ej: Excelente postura hoy..."
+                                   style="width: 100%; padding: 5px;">
                         </td>
                     </tr>
                     {% endfor %}

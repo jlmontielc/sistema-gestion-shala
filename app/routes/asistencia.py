@@ -5,7 +5,7 @@ from app import db
 from app.models.clase import Clase
 from app.models.reserva import Reserva
 from app.models.asistencia import Asistencia
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 asistencia_bp = Blueprint('asistencia', __name__, url_prefix='/asistencia')
 
@@ -14,29 +14,29 @@ asistencia_bp = Blueprint('asistencia', __name__, url_prefix='/asistencia')
 @role_required('ADMIN', 'INSTRUCTOR')
 def tomar_asistencia(clase_id):
     clase = Clase.query.get_or_404(clase_id)
-    
-    # Obtenemos solo las reservas activas (no canceladas)
     reservas = Reserva.query.filter_by(clase_id=clase_id, estado='RESERVADO').all()
 
     if request.method == 'POST':
-        # Recorremos cada reserva para ver qué marcó el profesor
         for reserva in reservas:
-            # El checkbox en HTML enviará 'on' si está marcado
+            # 1. Ver si marcó el check de asistencia
             asistio_form = request.form.get(f'asistencia_{reserva.id}')
-            
             estado = 'ASISTIO' if asistio_form else 'FALTO'
+            
+            # 2. Atrapar el comentario que escribió el profe
+            texto_nota = request.form.get(f'comentario_{reserva.id}')
 
-            # Guardamos en la tabla Asistencia
+            # 3. Guardar en la tabla
             nueva_asistencia = Asistencia(
                 reserva_id=reserva.id,
-                estado_asistencia=estado
+                estado_asistencia=estado,
+                comentario=texto_nota # Guardamos la nota aquí
             )
             db.session.add(nueva_asistencia)
             
-            # Opcional: Actualizar el estado de la reserva para saber que ya pasó
+            # Cambiamos el estado de la reserva
             reserva.estado = 'ASISTIDO' if estado == 'ASISTIO' else 'NO_SHOW'
 
         db.session.commit()
-        return "<h1>¡Asistencia Guardada Correctamente! ✅</h1><a href='/dashboard'>Volver al Dashboard</a>"
+        return "<h1>¡Asistencia y Notas Guardadas! ✅</h1><a href='/panel'>Volver al Panel</a>"
 
     return render_template('tomar_asistencia.html', clase=clase, reservas=reservas)

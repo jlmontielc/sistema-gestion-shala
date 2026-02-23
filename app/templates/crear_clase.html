@@ -7,6 +7,14 @@
 <body>
     <h2>Programar Nueva Clase</h2>
     <form method="POST">
+        <label>Sede (Shala):</label>
+        <select name="shala_id" required>
+            <option value="">Selecciona la sede...</option>
+            {% for shala in shalas %}
+                <option value="{{ shala.id }}">{{ shala.nombre }} ({{ shala.direccion }})</option>
+            {% endfor %}
+        </select><br><br>
+        <label>Título:</label> <input type="text" name="titulo" required><br><br>
         <label>Título:</label> <input type="text" name="titulo" required><br><br>
         <label>Descripción:</label> <textarea name="descripcion"></textarea><br><br>
         <label>Fecha:</label> <input type="datetime-local" name="fecha_hora" required><br><br>

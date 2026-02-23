@@ -5,7 +5,7 @@ from datetime import datetime
 from app import db
 from app.models.clase import Clase
 from app.models.shala import Shala
-from app.routes.decorators import role_required
+from app.routes.decoradores import role_required
 
 clases_bp = Blueprint('clases', __name__, url_prefix='/clases')
 
@@ -14,7 +14,6 @@ clases_bp = Blueprint('clases', __name__, url_prefix='/clases')
 @role_required('ADMIN', 'INSTRUCTOR')
 def crear_clase():
     if request.method == 'POST':
-        # Recibir datos del formulario HTML
         titulo = request.form.get('titulo')
         descripcion = request.form.get('descripcion')
         fecha_str = request.form.get('fecha_hora') 
@@ -23,10 +22,11 @@ def crear_clase():
         modalidad = request.form.get('modalidad')
         link = request.form.get('room_link')
         
-        # Convertir texto a fecha real
+        # 👇 NUEVO: Capturamos la sede que eligió el profe aaaaa
+        shala_id = request.form.get('shala_id') 
+        
         fecha_hora = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
 
-        # IMPORTANTE: Asumimos que la Shala ID 1 existe (la crearemos en la prueba)
         nueva_clase = Clase(
             titulo=titulo,
             descripcion=descripcion,
@@ -36,15 +36,17 @@ def crear_clase():
             modalidad=modalidad,
             room_link=link,
             instructor_id=current_user.id,
-            shala_id=1 
+            shala_id=int(shala_id)  # 👇 ¡Adiós al "1" quemado!
         )
 
         db.session.add(nueva_clase)
         db.session.commit()
 
-        return "¡Clase creada exitosamente! <a href='/dashboard'>Volver</a>"
+        return "¡Clase creada exitosamente! <a href='/panel'>Volver</a>"
 
-    return render_template('crear_clase.html')
+    # 👇 NUEVO: Buscamos las sedes para mostrarlas en el formulario
+    todas_las_shalas = Shala.query.all()
+    return render_template('crear_clase.html', shalas=todas_las_shalas)
 
 
 @clases_bp.route('/listar')
@@ -72,7 +74,7 @@ def listar_clases():
     </head>
     <body>
         <h1>📅 Calendario de Clases</h1>
-        <a href="/dashboard" class="btn btn-gray">⬅ Volver al Dashboard</a>
+        <a href="/panel" class="btn btn-gray">⬅ Volver al Panel</a>
         
         <table>
             <thead>
