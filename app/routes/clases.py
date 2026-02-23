@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required, current_user
 from datetime import datetime
 from app import db
+from app.models.usuario import Usuario
 from app.models.clase import Clase
 from app.models.shala import Shala
 from app.routes.decoradores import role_required
@@ -21,9 +22,10 @@ def crear_clase():
         capacidad = request.form.get('capacidad')
         modalidad = request.form.get('modalidad')
         link = request.form.get('room_link')
-        
-        # 👇 NUEVO: Capturamos la sede que eligió el profe aaaaa
         shala_id = request.form.get('shala_id') 
+        
+        # 👇 NUEVO: Capturamos el instructor que el Admin eligió en el formulario
+        instructor_id = request.form.get('instructor_id') 
         
         fecha_hora = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
 
@@ -35,8 +37,9 @@ def crear_clase():
             capacidad=int(capacidad),
             modalidad=modalidad,
             room_link=link,
-            instructor_id=current_user.id,
-            shala_id=int(shala_id)  # 👇 ¡Adiós al "1" quemado!
+            # 👇 NUEVO: Guardamos al instructor elegido, NO al usuario actual
+            instructor_id=int(instructor_id),
+            shala_id=int(shala_id)
         )
 
         db.session.add(nueva_clase)
@@ -44,9 +47,11 @@ def crear_clase():
 
         return "¡Clase creada exitosamente! <a href='/panel'>Volver</a>"
 
-    # 👇 NUEVO: Buscamos las sedes para mostrarlas en el formulario
+    # Buscamos las sedes y TODOS los instructores para mostrarlos en el formulario
     todas_las_shalas = Shala.query.all()
-    return render_template('crear_clase.html', shalas=todas_las_shalas)
+    todos_los_instructores = Usuario.query.filter_by(rol='INSTRUCTOR').all()
+    
+    return render_template('crear_clase.html', shalas=todas_las_shalas, instructores=todos_los_instructores)
 
 
 @clases_bp.route('/listar')
@@ -80,7 +85,7 @@ def listar_clases():
             <thead>
                 <tr>
                     <th>Clase</th>
-                    <th>Fecha</th>
+                    <th>Instructor</th> <th>Fecha</th>
                     <th>Horario</th>
                     <th>Modalidad</th>
                     <th>Acción</th>
@@ -101,9 +106,16 @@ def listar_clases():
         elif current_user.rol in ['INSTRUCTOR', 'ADMIN']:
             boton_accion = f'<a href="/asistencia/tomar/{c.id}" class="btn btn-green">📋 Tomar Lista</a>'
 
+        # 👇 MAGIA NUEVA: Buscamos al instructor de esta clase 👇
+        from app.models.usuario import Usuario
+        instructor = Usuario.query.get(c.instructor_id)
+        nombre_profe = instructor.nombre if instructor else "Por definir"
+
+        # Agregamos la columna del instructor con el enlace a su perfil
         html += f"""
         <tr>
             <td><strong>{c.titulo}</strong></td>
+            <td><a href="/instructor/{c.instructor_id}" style="color: #17a2b8; font-weight: bold; text-decoration: none;">👤 {nombre_profe}</a></td>
             <td>{c.fecha_hora.strftime('%d/%m/%Y')}</td>
             <td>{c.fecha_hora.strftime('%H:%M')} ({c.duracion_min} min)</td>
             <td>{c.modalidad}</td>

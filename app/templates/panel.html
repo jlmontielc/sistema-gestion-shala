@@ -61,6 +61,7 @@
     </style>
 </head>
 <body>
+    
     <h1>🧘 Bienvenido/a, {{ usuario.nombre }}</h1>
     
     <div class="user-info">
@@ -71,6 +72,8 @@
         {% endif %}
     </div>
     
+    <a href="{{ url_for('auth.perfil') }}" class="btn btn-warning" style="margin-bottom: 20px;">✏️ Editar Mi Perfil</a>
+
     <div class="stats">
         <div class="stat-box">
             <h4>📅 Acciones Rápidas</h4>
@@ -110,9 +113,7 @@
         <a href="{{ url_for('paquetes.crear_paquete') }}" class="btn btn-success">📦 Crear Paquete</a>
         <a href="{{ url_for('paquetes.listar_paquetes') }}" class="btn btn-info">💰 Ver Paquetes</a>
         <a href="/analisis" class="btn btn-warning">📊 Análisis de Datos</a>
-        {% endif %}
-
-        {% if usuario.rol == 'ADMIN' %}
+        
         <a href="{{ url_for('shalas.crear_shala') }}" class="btn btn-success">🏠 Crear Shala</a>
         <a href="{{ url_for('shalas.listar_shalas') }}" class="btn btn-info">📋 Ver Shalas</a>
         {% endif %}
@@ -128,6 +129,7 @@
                 <h4>📅 Clases y Reservas</h4>
                 <a href="{{ url_for('clases.listar_clases') }}" class="btn">📅 Ver Calendario y Reservar</a>
                 <a href="{{ url_for('reservas.mis_reservas') }}" class="btn">🎫 Ver Mis Reservas</a>
+                <a href="{{ url_for('asistencia.mis_notas') }}" class="btn btn-info">📈 Ver mi Progreso</a>
             </div>
             
             <div>
@@ -140,7 +142,6 @@
         <hr>
         <h4>📍 Encuentra Shalas</h4>
         <a href="/shalas/buscar" class="btn">🔍 Buscar por Ubicación</a>
-        <p><small>Encuentra centros de yoga cercanos a ti</small></p>
     </div>
     {% endif %}
 

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil del Instructor</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        .profile-card { background: white; padding: 30px; border-radius: 10px; max-width: 600px; margin: 40px auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-top: 5px solid #17a2b8; }
+        .name-title { color: #343a40; margin-top: 0; }
+        .badge { background-color: #17a2b8; color: white; padding: 5px 10px; border-radius: 15px; font-size: 14px; display: inline-block; margin-bottom: 15px; }
+        .section-title { color: #17a2b8; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 25px; }
+        .btn-back { background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="profile-card">
+        <h1 class="name-title">🧘‍♂️ {{ instructor.nombre }}</h1>
+        <span class="badge">Instructor de Yoga</span>
+        
+        <p><strong>📧 Contacto:</strong> {{ instructor.email }}</p>
+
+        {% if instructor.instructor %}
+            <h3 class="section-title">📜 Biografía</h3>
+            <p>{{ instructor.instructor.bio | default('Este instructor prefiere que lo conozcas en el mat. ¡Anímate a su clase!', true) }}</p>
+            
+            <h3 class="section-title">🏅 Certificaciones</h3>
+            <p>{{ instructor.instructor.certificaciones | default('No hay certificaciones registradas.', true) }}</p>
+        {% else %}
+            <p style="color: gray; font-style: italic; margin-top: 20px;">Este instructor es nuevo y aún no ha completado su biografía.</p>
+        {% endif %}
+
+        <a href="javascript:history.back()" class="btn-back">⬅ Volver a las clases</a>
+    </div>
+</body>
+</html>

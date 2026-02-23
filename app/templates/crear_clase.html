@@ -14,7 +14,14 @@
                 <option value="{{ shala.id }}">{{ shala.nombre }} ({{ shala.direccion }})</option>
             {% endfor %}
         </select><br><br>
-        <label>Título:</label> <input type="text" name="titulo" required><br><br>
+
+        <label>Instructor que dará la clase:</label>
+        <select name="instructor_id" required>
+            <option value="">Selecciona al instructor...</option>
+            {% for profe in instructores %}
+                <option value="{{ profe.id }}">{{ profe.nombre }}</option>
+            {% endfor %}
+        </select><br><br>
         <label>Título:</label> <input type="text" name="titulo" required><br><br>
         <label>Descripción:</label> <textarea name="descripcion"></textarea><br><br>
         <label>Fecha:</label> <input type="datetime-local" name="fecha_hora" required><br><br>

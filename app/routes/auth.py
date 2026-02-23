@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
-from app.models.usuario import Usuario
+from app.models.usuario import Usuario, Instructor
 from app.routes.decoradores import role_required
 
 auth_bp = Blueprint('auth', __name__)
@@ -88,3 +88,45 @@ def cerrar_sesion():
     logout_user()
     flash("Sesión cerrada correctamente", "info")
     return redirect(url_for('auth.iniciar_sesion'))
+
+@auth_bp.route('/perfil', methods=['GET', 'POST'])
+@login_required
+def perfil():
+    if request.method == 'POST':
+        # Guardamos los datos básicos para cualquier usuario
+        current_user.nombre = request.form.get('nombre')
+        current_user.telefono = request.form.get('telefono')
+        
+        # Si es Instructor, guardamos su biografía y certificaciones
+        if current_user.rol == 'INSTRUCTOR':
+            bio = request.form.get('bio')
+            certificaciones = request.form.get('certificaciones')
+            
+            # Verificamos si ya tiene un perfil de instructor creado en la base de datos
+            if not current_user.instructor:
+                # Si es su primera vez, le creamos el perfil extendido
+                nuevo_perfil = Instructor(id=current_user.id, bio=bio, certificaciones=certificaciones)
+                db.session.add(nuevo_perfil)
+            else:
+                # Si ya lo tenía, simplemente lo actualizamos
+                current_user.instructor.bio = bio
+                current_user.instructor.certificaciones = certificaciones
+
+        db.session.commit()
+        flash("¡Perfil actualizado con éxito!", "success")
+        return redirect(url_for('auth.panel'))
+
+    return render_template('perfil.html')
+
+@auth_bp.route('/instructor/<int:id>')
+@login_required
+def ver_instructor(id):
+    # Buscamos al usuario por su ID
+    instructor_user = Usuario.query.get_or_404(id)
+    
+    # Verificamos que sea un instructor o un administrador
+    if instructor_user.rol not in ['INSTRUCTOR', 'ADMIN']:
+        flash("El usuario no es un instructor válido.", "error")
+        return redirect(url_for('auth.panel'))
+        
+    return render_template('perfil_instructor.html', instructor=instructor_user)
