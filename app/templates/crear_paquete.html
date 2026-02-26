@@ -2,31 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Crear Nuevo Paquete</title>
+    <title>Crear Paquete Global</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
+        .form-container { background: white; padding: 30px; border-radius: 8px; max-width: 500px; margin: auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;}
+        .btn-save { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;}
+        .btn-cancel { margin-left: 10px; text-decoration: none; color: #6c757d; }
+    </style>
 </head>
 <body>
-    <h2>📦 Crear Nuevo Paquete de Clases</h2>
-    <form method="POST">
-        <label>Sede a la que pertenece el paquete:</label><br>
-        <select name="shala_id" required>
-            <option value="">Selecciona la sede...</option>
-            {% for shala in shalas %}
-                <option value="{{ shala.id }}">{{ shala.nombre }}</option>
-            {% endfor %}
-        </select><br><br>
-        <label>Nombre del Paquete:</label><br>
-        <label>Nombre del Paquete:</label><br>
-        <input type="text" name="nombre" placeholder="Ej: Bono 10 Clases" required><br><br>
-        
-        <label>Precio ($):</label><br>
-        <input type="number" step="0.01" name="precio" placeholder="50.00" required><br><br>
-        
-        <label>Cantidad de Clases (Créditos):</label><br>
-        <input type="number" name="cantidad_clases" placeholder="10" required><br><br>
-        
-        <button type="submit">💾 Guardar Paquete</button>
-    </form>
-    <br>
-    <a href="/panel">Cancelar y volver</a>
+    <div class="form-container">
+        <h2>📦 Crear Nuevo Paquete (Pase Global)</h2>
+        <form method="POST">
+            <label>Nombre del Paquete:</label>
+            <input type="text" name="nombre" placeholder="Ej: Pase Mensual 10 Clases" required>
+
+            <label>Descripción:</label>
+            <textarea name="descripcion" rows="3" placeholder="Detalles del paquete (válido para todas las sedes)..."></textarea>
+
+            <label>Precio ($):</label>
+            <input type="number" step="0.01" name="precio" placeholder="Ej: 50.00" required>
+
+            <label>Cantidad de Clases Incluidas:</label>
+            <input type="number" name="sesiones_incluidas" placeholder="Ej: 10" required>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn-save">💾 Crear Paquete</button>
+                <a href="{{ url_for('auth.panel') }}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

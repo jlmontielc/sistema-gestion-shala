@@ -4,7 +4,7 @@ class Paquete(db.Model):
     __tablename__ = 'paquete'
 
     id = db.Column(db.Integer, primary_key=True)
-    shala_id = db.Column(db.Integer, db.ForeignKey('shala.id'))
+    shala_id = db.Column(db.Integer, db.ForeignKey('shala.id'), nullable=True)
     nombre = db.Column(db.String(120))
     descripcion = db.Column(db.Text)
     precio = db.Column(db.Numeric(10, 2))

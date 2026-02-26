@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
 from app.models.paquete import Paquete
@@ -8,32 +8,29 @@ paquetes_bp = Blueprint('paquetes', __name__, url_prefix='/paquetes')
 
 @paquetes_bp.route('/crear', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN') # En nuestro código, 'ADMIN' es el rol del Shala
+@role_required('ADMIN')
 def crear_paquete():
-    from app.models.shala import Shala # Importamos Shala
-    
     if request.method == 'POST':
         nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
         precio = request.form.get('precio')
-        clases = request.form.get('cantidad_clases')
-        shala_id = request.form.get('shala_id') # Capturamos la sede
-        
-        # Creamos el producto en la base de datos
+        sesiones = request.form.get('sesiones_incluidas')
+
+        # Creamos el paquete SIN el shala_id (quedará como global)
         nuevo_paquete = Paquete(
             nombre=nombre,
+            descripcion=descripcion,
             precio=float(precio),
-            sesiones_incluidas=int(clases),
-            validez_dias=30,
-            shala_id=int(shala_id) # Lo guardamos en la sede
+            sesiones_incluidas=int(sesiones)
         )
-        
+
         db.session.add(nuevo_paquete)
         db.session.commit()
-        # Al terminar, volvemos a la lista para ver que se creó
-        return redirect(url_for('paquetes.listar_paquetes'))
-        
-    shalas = Shala.query.all() # Buscamos las sedes
-    return render_template('crear_paquete.html', shalas=shalas)
+
+        flash("¡Paquete global creado exitosamente!", "success")
+        return redirect(url_for('auth.panel'))
+
+    return render_template('crear_paquete.html')
 
 @paquetes_bp.route('/listar')
 @login_required
@@ -41,7 +38,7 @@ def listar_paquetes():
     # Esta vista servirá para que el Shala vea qué vende
     # Y luego la usaremos para que el Yogui vea qué comprar
     todos_paquetes = Paquete.query.all()
-    return render_template('listar_paquetes.html', paquetes=todos_paquetes)
+    return render_template('paquetes.html', paquetes=todos_paquetes)
 
 @paquetes_bp.route('/comprar/<int:id>')
 @login_required
