@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
+from datetime import datetime
 from app.models.clase import Clase
 from app.models.reserva import Reserva
 from app.models.asistencia import Asistencia
@@ -44,26 +45,54 @@ def tomar_asistencia(clase_id):
 @login_required
 @role_required('YOGUI')
 def mis_notas():
-    # Buscamos todas las asistencias asociadas a las reservas de este yogui
-    asistencias = Asistencia.query.join(Reserva).filter(
-        Reserva.yogui_id == current_user.id,
-        Asistencia.comentario != '',
-        Asistencia.comentario.isnot(None)
+    # Traemos TODAS las asistencias de este yogui (con o sin comentario)
+    asistencias_db = Asistencia.query.join(Reserva).filter(
+        Reserva.yogui_id == current_user.id
     ).all()
-    
-    html = "<h1>📈 Mi Progreso y Notas</h1><ul>"
-    if not asistencias:
-        html += "<p>Aún no tienes notas de tus instructores.</p>"
-    else:
-        for a in asistencias:
-            # 👇 ESTA ES LA MAGIA NUEVA 👇
-            # Buscamos la reserva y la clase manualmente usando sus IDs
-            reserva = Reserva.query.get(a.reserva_id)
-            clase = Clase.query.get(reserva.clase_id)
-            
-            # Ahora sí podemos sacar la fecha y el título sin errores
-            fecha = clase.fecha_hora.strftime('%d/%m/%Y')
-            html += f"<li><strong>{fecha} - {clase.titulo}:</strong> {a.comentario}</li><br>"
-            
-    html += "</ul><a href='/panel' style='padding: 8px 15px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;'>Volver al Panel</a>"
-    return html
+
+    # Averiguamos el mes y año actual
+    hoy = datetime.now()
+    mes_actual = hoy.month
+    ano_actual = hoy.year
+
+    asistencias_mes = 0
+    faltas_mes = 0
+    notas_mostrar = []
+
+    for a in asistencias_db:
+        # Buscamos la reserva y la clase manualmente (como hicimos antes para evitar errores)
+        reserva = Reserva.query.get(a.reserva_id)
+        clase = Clase.query.get(reserva.clase_id)
+
+        # 1. Cálculos de estadísticas (Solo sumamos si la clase fue de este mes y este año)
+        if clase.fecha_hora.month == mes_actual and clase.fecha_hora.year == ano_actual:
+            if a.estado_asistencia == 'ASISTIO':
+                asistencias_mes += 1
+            elif a.estado_asistencia == 'FALTO':
+                faltas_mes += 1
+
+        # 2. Historial de comentarios (Guardamos los que tengan texto para mostrarlos)
+        if a.comentario and a.comentario.strip() != '':
+            notas_mostrar.append({
+                'fecha': clase.fecha_hora.strftime('%d/%m/%Y'),
+                'titulo': clase.titulo,
+                'comentario': a.comentario
+            })
+
+    # Invertimos la lista para que el comentario más reciente salga de primero
+    notas_mostrar.reverse()
+
+    # Calculamos la tasa de asistencia
+    total_clases = asistencias_mes + faltas_mes
+    tasa = int((asistencias_mes / total_clases) * 100) if total_clases > 0 else 0
+
+    meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    nombre_mes = meses[mes_actual]
+
+    # Ahora en lugar de devolver texto plano, llamamos a un archivo HTML
+    return render_template('mis_notas.html', 
+                           nombre_mes=nombre_mes, 
+                           asistencias=asistencias_mes, 
+                           faltas=faltas_mes, 
+                           tasa=tasa, 
+                           notas=notas_mostrar)

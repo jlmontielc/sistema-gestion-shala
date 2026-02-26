@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Detalle Alumno</title>
+<style>body { font-family: sans-serif; padding: 20px; } .card { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; } input { width: 100%; padding: 8px; margin: 5px 0 15px; } .btn { background: #28a745; color: white; padding: 10px 15px; border: none; cursor: pointer; border-radius: 5px; } .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }</style>
+</head>
+<body>
+    <h2>👤 Perfil del Alumno: {{ yogui.nombre }}</h2>
+    <a href="{{ url_for('auth.listar_yoguis') }}">⬅ Volver a la lista</a>
+    <hr>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>✏️ Editar Información</h3>
+            <form method="POST">
+                <label>Nombre:</label> <input type="text" name="nombre" value="{{ yogui.nombre }}">
+                <label>Email:</label> <input type="email" name="email" value="{{ yogui.email }}">
+                <label>Teléfono:</label> <input type="text" name="telefono" value="{{ yogui.telefono or '' }}">
+                <label>Saldo de Clases Actual:</label> <input type="number" name="saldo_clases" value="{{ yogui.saldo_clases }}">
+                <button type="submit" class="btn">💾 Guardar Cambios</button>
+            </form>
+            
+            <form action="{{ url_for('auth.eliminar_yogui', id=yogui.id) }}" method="POST" style="margin-top: 20px;" onsubmit="return confirm('¿Seguro que deseas eliminar este alumno?');">
+                <button type="submit" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">🗑️ Eliminar Usuario</button>
+            </form>
+        </div>
+
+        <div>
+            <div class="card">
+                <h3>🎫 Últimas Reservas</h3>
+                <ul>
+                    {% for r in reservas[:5] %}
+                        <li>{{ r.clase.titulo }} - {{ r.clase.fecha_hora.strftime('%d/%m/%Y') }} ({{ r.estado }})</li>
+                    {% else %} <li>No tiene reservas.</li> {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3>💰 Últimos Pagos</h3>
+                <ul>
+                    {% for p in pagos[:5] %}
+                        <li>${{ p.monto }} - {{ p.fecha_pago.strftime('%d/%m/%Y') }} ({{ p.estado }})</li>
+                    {% else %} <li>No tiene pagos.</li> {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

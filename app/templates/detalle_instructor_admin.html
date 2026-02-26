@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Detalle Instructor</title>
+<style>body { font-family: sans-serif; padding: 20px; } .card { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; } input, textarea { width: 100%; padding: 8px; margin: 5px 0 15px; } .btn { background: #28a745; color: white; padding: 10px 15px; border: none; cursor: pointer; border-radius: 5px; } .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }</style>
+</head>
+<body>
+    <h2>👨‍🏫 Perfil del Instructor: {{ instructor.nombre }}</h2>
+    <a href="{{ url_for('auth.listar_instructores') }}">⬅ Volver a la lista</a>
+    <hr>
+    
+    <div class="grid">
+        <div class="card">
+            <h3>✏️ Editar Información</h3>
+            <form method="POST">
+                <label>Nombre:</label> <input type="text" name="nombre" value="{{ instructor.nombre }}">
+                <label>Email:</label> <input type="email" name="email" value="{{ instructor.email }}">
+                <label>Teléfono:</label> <input type="text" name="telefono" value="{{ instructor.telefono or '' }}">
+                
+                <label>Biografía:</label>
+                <textarea name="bio" rows="4">{{ instructor.instructor.bio if instructor.instructor else '' }}</textarea>
+                
+                <label>Certificaciones:</label>
+                <textarea name="certificaciones" rows="3">{{ instructor.instructor.certificaciones if instructor.instructor else '' }}</textarea>
+                
+                <button type="submit" class="btn">💾 Guardar Cambios</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>📅 Clases Asignadas</h3>
+            <ul>
+                {% for c in clases %}
+                    <li><strong>{{ c.titulo }}</strong> - {{ c.fecha_hora.strftime('%d/%m/%Y %H:%M') }}</li>
+                {% else %} <li>No tiene clases asignadas aún.</li> {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

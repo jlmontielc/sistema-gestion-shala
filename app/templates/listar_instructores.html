@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Lista de Instructores</title>
+<style>body { font-family: sans-serif; padding: 20px; } table { width: 100%; border-collapse: collapse; margin-top: 20px; } th, td { border: 1px solid #ddd; padding: 10px; text-align: left; } th { background-color: #28a745; color: white; } .btn { padding: 5px 10px; text-decoration: none; border-radius: 3px; color: white; background-color: #17a2b8; }</style>
+</head>
+<body>
+    <h2>👨‍🏫 Gestión de Instructores</h2>
+    <a href="{{ url_for('auth.panel') }}" style="color: gray;">⬅ Volver al Panel</a>
+    <table>
+        <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acciones</th></tr></thead>
+        <tbody>
+            {% for i in instructores %}
+            <tr>
+                <td>{{ i.id }}</td><td><strong>{{ i.nombre }}</strong></td><td>{{ i.email }}</td>
+                <td><a href="{{ url_for('auth.detalle_instructor_admin', id=i.id) }}" class="btn">👁️ Ver / Editar</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

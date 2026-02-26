@@ -113,9 +113,11 @@
         <a href="{{ url_for('paquetes.crear_paquete') }}" class="btn btn-success">📦 Crear Paquete</a>
         <a href="{{ url_for('paquetes.listar_paquetes') }}" class="btn btn-info">💰 Ver Paquetes</a>
         <a href="/analisis" class="btn btn-warning">📊 Análisis de Datos</a>
-        
         <a href="{{ url_for('shalas.crear_shala') }}" class="btn btn-success">🏠 Crear Shala</a>
         <a href="{{ url_for('shalas.listar_shalas') }}" class="btn btn-info">📋 Ver Shalas</a>
+        
+        <a href="{{ url_for('auth.listar_yoguis') }}" class="btn" style="background-color: #6f42c1;">👥 Gestión Yoguis</a>
+        <a href="{{ url_for('auth.listar_instructores') }}" class="btn" style="background-color: #e83e8c;">👨‍🏫 Gestión Instructores</a>
         {% endif %}
     </div>
     {% endif %}
@@ -140,8 +142,9 @@
         </div>
         
         <hr>
-        <h4>📍 Encuentra Shalas</h4>
-        <a href="/shalas/buscar" class="btn">🔍 Buscar por Ubicación</a>
+        <h4>📍 Nuestras Sedes</h4>
+        <a href="{{ url_for('shalas.listar_shalas') }}" class="btn">🏢 Ver Sedes Disponibles</a>
+        <p><small>Conoce las direcciones y detalles de nuestros centros</small></p>
     </div>
     {% endif %}
 
