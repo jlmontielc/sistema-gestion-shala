@@ -4,9 +4,10 @@ pymysql.install_as_MySQLdb()
 import os
 from dotenv import load_dotenv # type: ignore
 
-from flask import Flask, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import current_user
 
 db = SQLAlchemy()
 
@@ -25,7 +26,9 @@ def create_app():
 
     @app.route("/")
     def home():
-        return redirect(url_for('auth.iniciar_sesion')) 
+        if current_user.is_authenticated:
+            return redirect(url_for('auth.panel'))
+        return render_template('inicio.html')
 
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
