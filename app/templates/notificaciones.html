@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Notificaciones</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f6f7f9; }
+        .btn { display: inline-block; padding: 10px 18px; border-radius: 6px; text-decoration: none; color: white; margin-right: 8px; }
+        .btn-back { background: #6c757d; }
+        .btn-read { background: #17a2b8; }
+        .panel { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); margin-top: 16px; }
+        .notificacion { border-left: 4px solid #28a745; padding: 14px; margin-bottom: 14px; background: #f8fff9; border-radius: 0 6px 6px 0; }
+        .notificacion.leida { border-left-color: #ced4da; background: #f8f9fa; }
+        .meta { color: #6c757d; font-size: 0.9em; }
+        h1 { margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('auth.panel') }}" class="btn btn-back">⬅ Volver al panel</a>
+    <a href="{{ url_for('reservas.marcar_notificaciones_leidas') }}" class="btn btn-read">✅ Marcar todas como leídas</a>
+
+    <div class="panel">
+        <h1>🔔 Mis notificaciones</h1>
+        <p>Aquí verás confirmaciones automáticas cuando reserves una clase.</p>
+
+        {% if notificaciones %}
+            {% for n in notificaciones %}
+                <div class="notificacion {% if n.leida %}leida{% endif %}">
+                    <strong>{{ n.titulo }}</strong>
+                    <p>{{ n.mensaje }}</p>
+                    <div class="meta">{{ n.fecha_creacion.strftime('%d/%m/%Y %H:%M') }} {% if n.leida %}· Leída{% else %}· Nueva{% endif %}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No tienes notificaciones aún.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

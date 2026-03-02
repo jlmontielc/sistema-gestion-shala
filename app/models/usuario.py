@@ -16,6 +16,7 @@ class Usuario(UserMixin, db.Model):
     saldo_clases = db.Column(db.Integer, default=0)
 
     instructor = db.relationship('Instructor', backref='usuario', uselist=False)
+    notificaciones = db.relationship('Notificacion', backref='yogui', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f"<Usuario {self.email}>"
