@@ -19,7 +19,7 @@
         <select name="instructor_id" required>
             <option value="">Selecciona al instructor...</option>
             {% for profe in instructores %}
-                <option value="{{ profe.id }}">{{ profe.nombre }}</option>
+                <option value="{{ profe.id }}" data-shala-id="{{ profe.instructor.shala_id }}">{{ profe.nombre }}</option>
             {% endfor %}
         </select><br><br>
         <label>Título:</label> <input type="text" name="titulo" required><br><br>
@@ -38,5 +38,23 @@
         
         <button type="submit">Guardar Clase</button>
     </form>
+    
+    <script>
+        const shalaSelect = document.querySelector('select[name="shala_id"]');
+        const instructorSelect = document.querySelector('select[name="instructor_id"]');
+        const instructorOptions = Array.from(instructorSelect.querySelectorAll('option[data-shala-id]'));
+
+        function filtrarInstructoresPorShala() {
+            const shalaId = shalaSelect.value;
+            instructorSelect.value = '';
+
+            instructorOptions.forEach((option) => {
+                option.hidden = shalaId && option.dataset.shalaId !== shalaId;
+            });
+        }
+
+        shalaSelect.addEventListener('change', filtrarInstructoresPorShala);
+    </script>
+    
 </body>
 </html>

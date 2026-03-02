@@ -6,6 +6,7 @@ from app.models.usuario import Usuario, Instructor
 from app.models.reserva import Reserva
 from app.models.pago import Pago
 from app.models.clase import Clase
+from app.models.shala import Shala
 from app.routes.decoradores import role_required
 
 auth_bp = Blueprint('auth', __name__)
@@ -107,9 +108,9 @@ def perfil():
             
             # Verificamos si ya tiene un perfil de instructor creado en la base de datos
             if not current_user.instructor:
-                # Si es su primera vez, le creamos el perfil extendido
-                nuevo_perfil = Instructor(id=current_user.id, bio=bio, certificaciones=certificaciones)
-                db.session.add(nuevo_perfil)
+                # El shala de un instructor debe ser definido por un administrador.
+                flash('Tu perfil aún no tiene un shala asignado. Solicita la asignación al administrador.', 'error')
+                return redirect(url_for('auth.perfil'))
             else:
                 # Si ya lo tenía, simplemente lo actualizamos
                 current_user.instructor.bio = bio
@@ -193,19 +194,35 @@ def listar_instructores():
 @role_required('ADMIN')
 def detalle_instructor_admin(id):
     instructor = Usuario.query.get_or_404(id)
+    if instructor.rol != 'INSTRUCTOR':
+        flash('El usuario seleccionado no es un instructor.', 'error')
+        return redirect(url_for('auth.listar_instructores'))
+
+    shalas = Shala.query.order_by(Shala.nombre.asc()).all()
     
     if request.method == 'POST':
         instructor.nombre = request.form.get('nombre')
         instructor.email = request.form.get('email')
         instructor.telefono = request.form.get('telefono')
+        shala_id = request.form.get('shala_id')
+
+        if not shala_id:
+            flash('Debes asignar un shala al instructor.', 'error')
+            return redirect(url_for('auth.detalle_instructor_admin', id=id))
         
         bio = request.form.get('bio')
         certificaciones = request.form.get('certificaciones')
         
         if not instructor.instructor:
-            nuevo_perfil = Instructor(id=instructor.id, bio=bio, certificaciones=certificaciones)
+            nuevo_perfil = Instructor(
+                id=instructor.id,
+                shala_id=int(shala_id),
+                bio=bio,
+                certificaciones=certificaciones
+            )
             db.session.add(nuevo_perfil)
         else:
+            instructor.instructor.shala_id = int(shala_id)
             instructor.instructor.bio = bio
             instructor.instructor.certificaciones = certificaciones
             
@@ -214,4 +231,9 @@ def detalle_instructor_admin(id):
         return redirect(url_for('auth.detalle_instructor_admin', id=id))
         
     clases = Clase.query.filter_by(instructor_id=id).order_by(Clase.fecha_hora.desc()).all()
-    return render_template('detalle_instructor_admin.html', instructor=instructor, clases=clases)
+    return render_template(
+        'detalle_instructor_admin.html',
+        instructor=instructor,
+        clases=clases,
+        shalas=shalas
+    )

@@ -24,5 +24,8 @@ class Instructor(db.Model):
     __tablename__ = 'instructor'
 
     id = db.Column(db.Integer, db.ForeignKey('usuario.id'), primary_key=True)
+    shala_id = db.Column(db.Integer, db.ForeignKey('shala.id'), nullable=False)
     bio = db.Column(db.Text)
     certificaciones = db.Column(db.Text)
+
+    shala = db.relationship('Shala', backref='instructores')

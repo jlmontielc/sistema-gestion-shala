@@ -1,5 +1,5 @@
 # app/routes/clases.py
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import datetime
 from app import db
@@ -14,6 +14,8 @@ clases_bp = Blueprint('clases', __name__, url_prefix='/clases')
 @login_required
 @role_required('ADMIN', 'INSTRUCTOR')
 def crear_clase():
+    instructores_disponibles = Usuario.query.filter_by(rol='INSTRUCTOR').join(Usuario.instructor).all()
+
     if request.method == 'POST':
         titulo = request.form.get('titulo')
         descripcion = request.form.get('descripcion')
@@ -25,7 +27,16 @@ def crear_clase():
         shala_id = request.form.get('shala_id') 
         
         # 👇 NUEVO: Capturamos el instructor que el Admin eligió en el formulario
-        instructor_id = request.form.get('instructor_id') 
+        instructor_id = request.form.get('instructor_id')
+
+        instructor = Usuario.query.filter_by(id=int(instructor_id), rol='INSTRUCTOR').first() if instructor_id else None
+        if not instructor or not instructor.instructor:
+            flash('Debes seleccionar un instructor válido.', 'error')
+            return render_template('crear_clase.html', shalas=Shala.query.all(), instructores=instructores_disponibles)
+
+        if instructor.instructor.shala_id != int(shala_id):
+            flash('El instructor seleccionado no pertenece al shala elegido.', 'error')
+            return render_template('crear_clase.html', shalas=Shala.query.all(), instructores=instructores_disponibles) 
         
         fecha_hora = datetime.strptime(fecha_str, '%Y-%m-%dT%H:%M')
 
@@ -49,7 +60,7 @@ def crear_clase():
 
     # Buscamos las sedes y TODOS los instructores para mostrarlos en el formulario
     todas_las_shalas = Shala.query.all()
-    todos_los_instructores = Usuario.query.filter_by(rol='INSTRUCTOR').all()
+    todos_los_instructores = instructores_disponibles
     
     return render_template('crear_clase.html', shalas=todas_las_shalas, instructores=todos_los_instructores)
 

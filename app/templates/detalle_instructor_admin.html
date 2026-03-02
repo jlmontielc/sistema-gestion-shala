@@ -15,6 +15,16 @@
                 <label>Nombre:</label> <input type="text" name="nombre" value="{{ instructor.nombre }}">
                 <label>Email:</label> <input type="email" name="email" value="{{ instructor.email }}">
                 <label>Teléfono:</label> <input type="text" name="telefono" value="{{ instructor.telefono or '' }}">
+
+                <label>Shala asignado:</label>
+                <select name="shala_id" required>
+                    <option value="">Selecciona un shala...</option>
+                    {% for shala in shalas %}
+                        <option value="{{ shala.id }}" {% if instructor.instructor and instructor.instructor.shala_id == shala.id %}selected{% endif %}>
+                            {{ shala.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
                 
                 <label>Biografía:</label>
                 <textarea name="bio" rows="4">{{ instructor.instructor.bio if instructor.instructor else '' }}</textarea>
