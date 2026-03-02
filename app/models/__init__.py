@@ -5,3 +5,4 @@ from .paquete import Paquete
 from .reserva import Reserva
 from .pago import Pago
 from .asistencia import Asistencia
+from .notificacion import Notificacion

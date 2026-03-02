@@ -84,6 +84,12 @@
         <div class="stat-box">
             <h4>🎫 Mis Reservas</h4>
             <a href="{{ url_for('reservas.mis_reservas') }}" class="btn btn-success">Ver Reservas</a>
+            <a href="{{ url_for('reservas.ver_notificaciones') }}" class="btn btn-info">
+                🔔 Notificaciones
+                {% if notificaciones_no_leidas > 0 %}
+                    ({{ notificaciones_no_leidas }})
+                {% endif %}
+            </a>
         </div>
         {% endif %}
     </div>
@@ -131,6 +137,7 @@
                 <h4>📅 Clases y Reservas</h4>
                 <a href="{{ url_for('clases.listar_clases') }}" class="btn">📅 Ver Calendario y Reservar</a>
                 <a href="{{ url_for('reservas.mis_reservas') }}" class="btn">🎫 Ver Mis Reservas</a>
+                <a href="{{ url_for('reservas.ver_notificaciones') }}" class="btn btn-info">🔔 Ver Notificaciones</a>
                 <a href="{{ url_for('asistencia.mis_notas') }}" class="btn btn-info">📈 Ver mi Progreso</a>
             </div>
             

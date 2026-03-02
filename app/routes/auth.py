@@ -6,6 +6,7 @@ from app.models.usuario import Usuario, Instructor
 from app.models.reserva import Reserva
 from app.models.pago import Pago
 from app.models.clase import Clase
+from app.models.notificacion import Notificacion
 from app.routes.decoradores import role_required
 
 auth_bp = Blueprint('auth', __name__)
@@ -65,7 +66,15 @@ def iniciar_sesion():
 @auth_bp.route('/panel')
 @login_required
 def panel():
-    return render_template('panel.html', usuario=current_user)  # ✅ CAMBIADO: user → usuario
+    notificaciones_no_leidas = 0
+    if current_user.rol == 'YOGUI':
+        notificaciones_no_leidas = Notificacion.query.filter_by(yogui_id=current_user.id, leida=False).count()
+
+    return render_template(
+        'panel.html',
+        usuario=current_user,
+        notificaciones_no_leidas=notificaciones_no_leidas
+    )
 
 @auth_bp.route('/administracion')
 @login_required
