@@ -1,9 +1,10 @@
 # app/routes/reservas.py
-from flask import Blueprint, redirect, url_for
+from flask import Blueprint, redirect, url_for, render_template
 from flask_login import login_required, current_user
 from app import db
 from app.models.reserva import Reserva
 from app.models.clase import Clase
+from app.models.notificacion import Notificacion
 from app.routes.decoradores import role_required
 
 reservas_bp = Blueprint('reservas', __name__, url_prefix='/reservas')
@@ -44,8 +45,18 @@ def crear_reserva(clase_id):
         yogui_id=current_user.id,
         estado='RESERVADO'
     )
+
+    notificacion = Notificacion(
+        yogui_id=current_user.id,
+        titulo='Reserva confirmada',
+        mensaje=(
+            f"Tu reserva para \"{clase.titulo}\" del "
+            f"{clase.fecha_hora.strftime('%d/%m/%Y a las %H:%M')} ha sido confirmada."
+        )
+    )
     
     db.session.add(nueva_reserva)
+    db.session.add(notificacion)
     db.session.commit()
     
     return f"""
@@ -75,6 +86,34 @@ def mis_reservas():
         
     html += "</ul><a href='/clases/listar'>Reservar más clases</a> | <a href='/panel'>Volver al Panel</a>"
     return html
+
+
+@reservas_bp.route('/notificaciones')
+@login_required
+@role_required('YOGUI')
+def ver_notificaciones():
+    notificaciones = (
+        Notificacion.query
+        .filter_by(yogui_id=current_user.id)
+        .order_by(Notificacion.fecha_creacion.desc())
+        .all()
+    )
+
+    return render_template('notificaciones.html', notificaciones=notificaciones)
+
+
+@reservas_bp.route('/notificaciones/marcar-todas-leidas')
+@login_required
+@role_required('YOGUI')
+def marcar_notificaciones_leidas():
+    (
+        Notificacion.query
+        .filter_by(yogui_id=current_user.id, leida=False)
+        .update({'leida': True})
+    )
+    db.session.commit()
+
+    return redirect(url_for('reservas.ver_notificaciones'))
 
 @reservas_bp.route('/cancelar/<int:reserva_id>')
 @login_required
