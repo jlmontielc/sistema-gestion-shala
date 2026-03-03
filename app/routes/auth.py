@@ -6,12 +6,9 @@ from app.models.usuario import Usuario, Instructor
 from app.models.reserva import Reserva
 from app.models.pago import Pago
 from app.models.clase import Clase
-<<<<<<< HEAD
 from app.models.shala import Shala
-=======
-from app.models.notificacion import Notificacion
->>>>>>> 605a461e8e1ce6e390a1c23b0156c4aa9b3dc967
 from app.routes.decoradores import role_required
+from app.models.notificacion import Notificacion
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -73,12 +70,7 @@ def panel():
     notificaciones_no_leidas = 0
     if current_user.rol == 'YOGUI':
         notificaciones_no_leidas = Notificacion.query.filter_by(yogui_id=current_user.id, leida=False).count()
-
-    return render_template(
-        'panel.html',
-        usuario=current_user,
-        notificaciones_no_leidas=notificaciones_no_leidas
-    )
+    return render_template('panel.html', usuario=current_user, notificaciones_no_leidas=notificaciones_no_leidas)
 
 @auth_bp.route('/administracion')
 @login_required
@@ -243,13 +235,9 @@ def detalle_instructor_admin(id):
         return redirect(url_for('auth.detalle_instructor_admin', id=id))
         
     clases = Clase.query.filter_by(instructor_id=id).order_by(Clase.fecha_hora.desc()).all()
-<<<<<<< HEAD
     return render_template(
         'detalle_instructor_admin.html',
         instructor=instructor,
         clases=clases,
         shalas=shalas
     )
-=======
-    return render_template('detalle_instructor_admin.html', instructor=instructor, clases=clases)
->>>>>>> 605a461e8e1ce6e390a1c23b0156c4aa9b3dc967
