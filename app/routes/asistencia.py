@@ -12,7 +12,7 @@ asistencia_bp = Blueprint('asistencia', __name__, url_prefix='/asistencia')
 
 @asistencia_bp.route('/tomar/<int:clase_id>', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN', 'INSTRUCTOR')
+@role_required('ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR')
 def tomar_asistencia(clase_id):
     clase = Clase.query.get_or_404(clase_id)
     reservas = Reserva.query.filter_by(clase_id=clase_id, estado='RESERVADO').all()

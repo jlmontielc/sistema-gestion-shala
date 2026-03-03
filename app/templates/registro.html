@@ -22,7 +22,10 @@
             <option value="">Seleccionar rol...</option>
             <option value="YOGUI">Yogui (Alumno)</option>
             <option value="INSTRUCTOR">Instructor</option>
-            <option value="ADMIN">Administrador</option>
+            {% if current_user.is_authenticated and current_user.rol == "ADMIN" %}
+            <option value="ADMIN">Admin Global</option>
+            <option value="ADMIN_SHALA">Admin Shala</option>
+            {% endif %}
         </select><br><br>
 
         <button type="submit">Registrar</button>

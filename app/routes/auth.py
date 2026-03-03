@@ -23,6 +23,20 @@ def registro():
         if not nombre or not email or not password or not rol:
             flash("Datos incompletos", "error")
             return redirect(url_for('auth.registro'))
+        
+        roles_validos = ['YOGUI', 'INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA']
+        if rol not in roles_validos:
+            flash('Rol inválido', 'error')
+            return redirect(url_for('auth.registro'))
+
+        if rol in ['ADMIN', 'ADMIN_SHALA']:
+            if not current_user.is_authenticated or current_user.rol != 'ADMIN':
+                flash('Solo el Admin Global puede crear administradores.', 'error')
+                return redirect(url_for('auth.registro'))
+
+        if rol == 'ADMIN' and Usuario.query.filter_by(rol='ADMIN').first():
+            flash('Ya existe un Admin Global en el sistema.', 'error')
+            return redirect(url_for('auth.registro'))
 
         usuario_existente = Usuario.query.filter_by(email=email).first()
         if usuario_existente:
@@ -80,7 +94,7 @@ def administracion():
 
 @auth_bp.route('/gestion-clases')
 @login_required
-@role_required('ADMIN', 'INSTRUCTOR')
+@role_required('ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR')
 def gestion_clases():
     return "Gestión de clases"
 
@@ -133,7 +147,7 @@ def ver_instructor(id):
     instructor_user = Usuario.query.get_or_404(id)
     
     # Verificamos que sea un instructor o un administrador
-    if instructor_user.rol not in ['INSTRUCTOR', 'ADMIN']:
+    if instructor_user.rol not in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA']:
         flash("El usuario no es un instructor válido.", "error")
         return redirect(url_for('auth.panel'))
         
@@ -144,16 +158,28 @@ def ver_instructor(id):
 # ==========================================
 @auth_bp.route('/admin/yoguis')
 @login_required
-@role_required('ADMIN')
+@role_required('ADMIN', 'ADMIN_SHALA')
 def listar_yoguis():
-    yoguis = Usuario.query.filter_by(rol='YOGUI').all()
+    yoguis_query = Usuario.query.filter_by(rol='YOGUI')
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        yoguis_query = yoguis_query.join(Reserva, Reserva.yogui_id == Usuario.id).join(Clase, Clase.id == Reserva.clase_id).filter(Clase.shala_id == current_user.shala_id).distinct()
+    yoguis = yoguis_query.all()
     return render_template('listar_yoguis.html', yoguis=yoguis)
 
 @auth_bp.route('/admin/yogui/<int:id>', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN')
+@role_required('ADMIN', 'ADMIN_SHALA')
 def detalle_yogui(id):
     yogui = Usuario.query.get_or_404(id)
+    
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        yogui_en_shala = Reserva.query.join(Clase, Clase.id == Reserva.clase_id).filter(
+            Reserva.yogui_id == id,
+            Clase.shala_id == current_user.shala_id
+        ).first()
+        if not yogui_en_shala:
+            flash('No puedes gestionar yoguis de otra shala.', 'error')
+            return redirect(url_for('auth.listar_yoguis'))
     
     if request.method == 'POST':
         # Guardar cambios editados por el admin
@@ -172,9 +198,19 @@ def detalle_yogui(id):
 
 @auth_bp.route('/admin/yogui/eliminar/<int:id>', methods=['POST'])
 @login_required
-@role_required('ADMIN')
+@role_required('ADMIN', 'ADMIN_SHALA')
 def eliminar_yogui(id):
     yogui = Usuario.query.get_or_404(id)
+    
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        yogui_en_shala = Reserva.query.join(Clase, Clase.id == Reserva.clase_id).filter(
+            Reserva.yogui_id == id,
+            Clase.shala_id == current_user.shala_id
+        ).first()
+        if not yogui_en_shala:
+            flash('No puedes gestionar yoguis de otra shala.', 'error')
+            return redirect(url_for('auth.listar_yoguis'))
+        
     if Reserva.query.filter_by(yogui_id=id).first() or Pago.query.filter_by(yogui_id=id).first():
         flash('No se puede eliminar este alumno porque tiene historial de reservas o pagos. Edita su nombre a "Inactivo" en su lugar.', 'error')
     else:
@@ -188,21 +224,33 @@ def eliminar_yogui(id):
 # ==========================================
 @auth_bp.route('/admin/instructores')
 @login_required
-@role_required('ADMIN')
+@role_required('ADMIN', 'ADMIN_SHALA')
 def listar_instructores():
-    instructores = Usuario.query.filter_by(rol='INSTRUCTOR').all()
+    instructores_query = Usuario.query.filter_by(rol='INSTRUCTOR')
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        instructores_query = instructores_query.join(Usuario.instructor).filter(Instructor.shala_id == current_user.shala_id)
+    instructores = instructores_query.all()
     return render_template('listar_instructores.html', instructores=instructores)
 
 @auth_bp.route('/admin/instructor/<int:id>', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN')
+@role_required('ADMIN', 'ADMIN_SHALA')
 def detalle_instructor_admin(id):
     instructor = Usuario.query.get_or_404(id)
     if instructor.rol != 'INSTRUCTOR':
         flash('El usuario seleccionado no es un instructor.', 'error')
         return redirect(url_for('auth.listar_instructores'))
 
-    shalas = Shala.query.order_by(Shala.nombre.asc()).all()
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        if not instructor.instructor or instructor.instructor.shala_id != current_user.shala_id:
+            flash('No puedes gestionar instructores de otra shala.', 'error')
+            return redirect(url_for('auth.listar_instructores'))
+
+
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        shalas = Shala.query.filter_by(id=current_user.shala_id).order_by(Shala.nombre.asc()).all()
+    else:
+        shalas = Shala.query.order_by(Shala.nombre.asc()).all()
     
     if request.method == 'POST':
         instructor.nombre = request.form.get('nombre')
@@ -212,6 +260,9 @@ def detalle_instructor_admin(id):
 
         if not shala_id:
             flash('Debes asignar un shala al instructor.', 'error')
+            return redirect(url_for('auth.detalle_instructor_admin', id=id))
+        if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id != int(shala_id):
+            flash('Solo puedes asignar instructores a tu propia shala.', 'error')
             return redirect(url_for('auth.detalle_instructor_admin', id=id))
         
         bio = request.form.get('bio')

@@ -98,7 +98,7 @@
             <h1>🏠 {{ shala.nombre }}</h1>
             <div>
                 <a href="{{ url_for('shalas.listar_shalas') }}" class="btn-back">⬅ Volver a la Lista</a>
-                {% if current_user.rol == 'ADMIN' %}
+                {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
                     <a href="{{ url_for('shalas.editar_shala', id=shala.id) }}" class="btn-edit">✏️ Editar Shala</a>
                 {% endif %}
             </div>
@@ -175,7 +175,7 @@
                     <h4>📅 No hay clases programadas</h4>
                     <p>Esta shala aún no tiene clases programadas.</p>
                     
-                    {% if current_user.rol in ['ADMIN', 'INSTRUCTOR'] %}
+                    {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR'] %}
                         <a href="{{ url_for('clases.crear_clase') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 10px;">
                             ➕ Programar Primera Clase
                         </a>

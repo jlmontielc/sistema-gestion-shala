@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import datetime
 from app import db
-from app.models.usuario import Usuario
+from app.models.usuario import Usuario, Instructor
 from app.models.clase import Clase
 from app.models.shala import Shala
 from app.routes.decoradores import role_required
@@ -12,9 +12,12 @@ clases_bp = Blueprint('clases', __name__, url_prefix='/clases')
 
 @clases_bp.route('/crear', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN', 'INSTRUCTOR')
+@role_required('ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR')
 def crear_clase():
-    instructores_disponibles = Usuario.query.filter_by(rol='INSTRUCTOR').join(Usuario.instructor).all()
+    instructores_query = Usuario.query.filter_by(rol='INSTRUCTOR').join(Usuario.instructor)
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        instructores_query = instructores_query.filter(Instructor.shala_id == current_user.shala_id)
+    instructores_disponibles = instructores_query.all()
 
     if request.method == 'POST':
         titulo = request.form.get('titulo')
@@ -34,6 +37,10 @@ def crear_clase():
             flash('Debes seleccionar un instructor válido.', 'error')
             return render_template('crear_clase.html', shalas=Shala.query.all(), instructores=instructores_disponibles)
 
+        if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id != int(shala_id):
+            flash('Solo puedes crear clases en tu propia shala.', 'error')
+            return render_template('crear_clase.html', shalas=Shala.query.filter_by(id=current_user.shala_id).all(), instructores=instructores_disponibles)
+        
         if instructor.instructor.shala_id != int(shala_id):
             flash('El instructor seleccionado no pertenece al shala elegido.', 'error')
             return render_template('crear_clase.html', shalas=Shala.query.all(), instructores=instructores_disponibles) 
@@ -59,7 +66,10 @@ def crear_clase():
         return "¡Clase creada exitosamente! <a href='/panel'>Volver</a>"
 
     # Buscamos las sedes y TODOS los instructores para mostrarlos en el formulario
-    todas_las_shalas = Shala.query.all()
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
+        todas_las_shalas = Shala.query.filter_by(id=current_user.shala_id).all()
+    else:
+        todas_las_shalas = Shala.query.all()
     todos_los_instructores = instructores_disponibles
     
     return render_template('crear_clase.html', shalas=todas_las_shalas, instructores=todos_los_instructores)
@@ -114,11 +124,11 @@ def listar_clases():
             boton_accion = f'<a href="/reservas/crear/{c.id}" class="btn btn-blue">Reservar Lugar</a>'
             
         # SI ERES INSTRUCTOR O ADMIN -> Ves botón de TOMAR ASISTENCIA
-        elif current_user.rol in ['INSTRUCTOR', 'ADMIN']:
+        elif current_user.rol in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA']:
             boton_accion = f'<a href="/asistencia/tomar/{c.id}" class="btn btn-green">📋 Tomar Lista</a>'
 
         # 👇 MAGIA NUEVA: Buscamos al instructor de esta clase 👇
-        from app.models.usuario import Usuario
+        from app.models.usuario import Usuario, Instructor
         instructor = Usuario.query.get(c.instructor_id)
         nombre_profe = instructor.nombre if instructor else "Por definir"
 

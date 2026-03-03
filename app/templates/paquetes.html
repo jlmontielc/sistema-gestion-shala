@@ -155,7 +155,7 @@
                         <a href="{{ url_for('pagos.crear_sesion_pago', paquete_id=p.id) }}" class="btn-buy">🛒 Adquirir Pase</a>
                     {% endif %}
                     
-                    {% if current_user.rol == 'ADMIN' %}
+                    {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
                         <div class="admin-tag">
                             ID de Sistema: #{{ p.id }} <br>
                             <em>(Vista de Administrador)</em>
@@ -166,7 +166,7 @@
             {% else %}
             <div style="text-align: center; color: #666; width: 100%; margin-top: 50px;">
                 <h3>🧘‍♀️ Aún no hay paquetes disponibles en la tienda.</h3>
-                {% if current_user.rol == 'ADMIN' %}
+                {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
                     <a href="{{ url_for('paquetes.crear_paquete') }}" style="color: #007bff; font-weight: bold;">Haz clic aquí para crear el primer paquete</a>
                 {% endif %}
             </div>

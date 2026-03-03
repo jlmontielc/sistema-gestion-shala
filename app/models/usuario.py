@@ -11,9 +11,10 @@ class Usuario(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     telefono = db.Column(db.String(30))
     password_hash = db.Column(db.String(255), nullable=False)
-    rol = db.Column(db.Enum('ADMIN', 'INSTRUCTOR', 'YOGUI'), nullable=False)
+    rol = db.Column(db.Enum('ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR', 'YOGUI'), nullable=False)
     fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
     saldo_clases = db.Column(db.Integer, default=0)
+    shala_id = db.Column(db.Integer, db.ForeignKey('shala.id'), nullable=True)
 
     instructor = db.relationship('Instructor', backref='usuario', uselist=False)
     notificaciones = db.relationship('Notificacion', backref='yogui', lazy=True, cascade='all, delete-orphan')

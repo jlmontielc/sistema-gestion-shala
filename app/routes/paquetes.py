@@ -8,7 +8,7 @@ paquetes_bp = Blueprint('paquetes', __name__, url_prefix='/paquetes')
 
 @paquetes_bp.route('/crear', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN')
+@role_required('ADMIN', 'ADMIN_SHALA')
 def crear_paquete():
     if request.method == 'POST':
         nombre = request.form.get('nombre')

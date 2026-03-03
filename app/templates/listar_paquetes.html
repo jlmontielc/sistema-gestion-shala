@@ -74,7 +74,7 @@
     
     <br>
     
-    {% if current_user.rol == 'ADMIN' %}
+    {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
         <a href="{{ url_for('paquetes.crear_paquete') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
             ➕ Crear Nuevo Paquete
         </a>

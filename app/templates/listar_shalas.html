@@ -92,7 +92,7 @@
         <h1>🏠 Shalas (Centros de Yoga)</h1>
         <div>
             <a href="{{ url_for('auth.panel') }}" class="btn-back">⬅ Panel Principal</a>
-            {% if current_user.rol == 'ADMIN' %}
+            {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
                 <a href="{{ url_for('shalas.crear_shala') }}" class="btn-create">➕ Crear Nueva Shala</a>
             {% endif %}
         </div>
@@ -127,7 +127,7 @@
                         👁️ Ver Detalle
                     </a>
                     
-                    {% if current_user.rol == 'ADMIN' %}
+                    {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
                         <a href="{{ url_for('shalas.editar_shala', id=shala.id) }}" class="btn-action btn-edit">
                             ✏️ Editar
                         </a>
@@ -140,7 +140,7 @@
         <div class="no-shalas">
             <h3>🏠 No hay shalas registradas</h3>
             <p>Comienza creando la primera shala en el sistema.</p>
-            {% if current_user.rol == 'ADMIN' %}
+            {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
                 <a href="{{ url_for('shalas.crear_shala') }}" class="btn-create" style="margin-top: 20px;">
                     ➕ Crear Primera Shala
                 </a>
