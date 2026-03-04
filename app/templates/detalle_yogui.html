@@ -1,48 +1,122 @@
-<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="UTF-8"><title>Detalle Alumno</title>
-<style>body { font-family: sans-serif; padding: 20px; } .card { background: #f9f9f9; padding: 20px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 20px; } input { width: 100%; padding: 8px; margin: 5px 0 15px; } .btn { background: #28a745; color: white; padding: 10px 15px; border: none; cursor: pointer; border-radius: 5px; } .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }</style>
-</head>
-<body>
-    <h2>👤 Perfil del Alumno: {{ yogui.nombre }}</h2>
-    <a href="{{ url_for('auth.listar_yoguis') }}">⬅ Volver a la lista</a>
-    <hr>
-    
-    <div class="grid">
-        <div class="card">
-            <h3>✏️ Editar Información</h3>
-            <form method="POST">
-                <label>Nombre:</label> <input type="text" name="nombre" value="{{ yogui.nombre }}">
-                <label>Email:</label> <input type="email" name="email" value="{{ yogui.email }}">
-                <label>Teléfono:</label> <input type="text" name="telefono" value="{{ yogui.telefono or '' }}">
-                <label>Saldo de Clases Actual:</label> <input type="number" name="saldo_clases" value="{{ yogui.saldo_clases }}">
-                <button type="submit" class="btn">💾 Guardar Cambios</button>
-            </form>
-            
-            <form action="{{ url_for('auth.eliminar_yogui', id=yogui.id) }}" method="POST" style="margin-top: 20px;" onsubmit="return confirm('¿Seguro que deseas eliminar este alumno?');">
-                <button type="submit" style="background: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer;">🗑️ Eliminar Usuario</button>
-            </form>
+{% extends "base.html" %}
+
+{% block title %}Gestionar Alumno | ShalaFlow{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4 text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="bi bi-person-circle display-4 text-primary"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ yogui.nombre }}</h4>
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 mb-4">Estado: Activo</span>
+                
+                <hr class="my-4 opacity-25">
+                
+                <form method="POST" class="text-start">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Email</label>
+                        <input type="email" name="email" class="form-control rounded-3" value="{{ yogui.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Teléfono</label>
+                        <input type="text" name="telefono" class="form-control rounded-3" value="{{ yogui.telefono or '' }}">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-primary">Saldo de Clases (Créditos)</label>
+                        <input type="number" name="saldo_clases" class="form-control form-control-lg border-primary border-opacity-50 text-center fw-bold" value="{{ yogui.saldo_clases }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold shadow-sm">
+                        <i class="bi bi-save me-2"></i>Guardar Cambios
+                    </button>
+                </form>
+            </div>
         </div>
 
-        <div>
-            <div class="card">
-                <h3>🎫 Últimas Reservas</h3>
-                <ul>
-                    {% for r in reservas[:5] %}
-                        <li>{{ r.clase.titulo }} - {{ r.clase.fecha_hora.strftime('%d/%m/%Y') }} ({{ r.estado }})</li>
-                    {% else %} <li>No tiene reservas.</li> {% endfor %}
+        {% if current_user.rol == 'ADMIN' %}
+        <form action="{{ url_for('auth.eliminar_yogui', id=yogui.id) }}" method="POST" onsubmit="return confirm('¿Eliminar definitivamente al alumno?');">
+            <button type="submit" class="btn btn-outline-danger w-100 rounded-pill btn-sm">Eliminar Alumno</button>
+        </form>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-header bg-white border-0 pt-4 px-4">
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill px-4 me-2" id="res-tab" data-bs-toggle="pill" data-bs-target="#pills-res" type="button" role="tab">Historial de Reservas</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill px-4" id="pagos-tab" data-bs-toggle="pill" data-bs-target="#pills-pagos" type="button" role="tab">Registro de Pagos</button>
+                    </li>
                 </ul>
             </div>
-            
-            <div class="card">
-                <h3>💰 Últimos Pagos</h3>
-                <ul>
-                    {% for p in pagos[:5] %}
-                        <li>${{ p.monto }} - {{ p.fecha_pago.strftime('%d/%m/%Y') }} ({{ p.estado }})</li>
-                    {% else %} <li>No tiene pagos.</li> {% endfor %}
-                </ul>
+            <div class="card-body p-0 mt-3">
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-res" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">Clase</th>
+                                        <th>Fecha</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for reserva in reservas %}
+                                    <tr>
+                                        <td class="ps-4">
+                                            <span class="fw-bold d-block text-dark">{{ reserva.clase.titulo }}</span>
+                                            <small class="text-muted">{{ reserva.clase.shala.nombre }}</small>
+                                        </td>
+                                        <td class="small">{{ reserva.fecha_reserva.strftime('%d/%m/%Y %H:%M') }}</td>
+                                        <td class="text-center">
+                                            {% set r_color = 'success' if reserva.estado == 'RESERVADO' else ('danger' if reserva.estado == 'CANCELADO' else 'secondary') %}
+                                            <span class="badge bg-{{ r_color }} bg-opacity-10 text-{{ r_color }} rounded-pill px-3">{{ reserva.estado }}</span>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr><td colspan="3" class="text-center py-5 text-muted">No hay reservas registradas.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pills-pagos" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="ps-4">Paquete</th>
+                                        <th>Fecha Pago</th>
+                                        <th class="text-center">Monto</th>
+                                        <th class="text-center">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for pago in pagos %}
+                                    <tr>
+                                        <td class="ps-4 fw-bold text-dark">{{ pago.paquete.nombre if pago.paquete else 'Compra Global' }}</td>
+                                        <td class="small">{{ pago.fecha_pago.strftime('%d/%m/%Y %H:%M') }}</td>
+                                        <td class="text-center fw-bold">${{ "%.2f"|format(pago.monto) }}</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">{{ pago.estado }}</span>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr><td colspan="4" class="text-center py-5 text-muted">No hay registros de pagos.</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
