@@ -1,40 +1,35 @@
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <title>Pago cancelado</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #fff0f0;
-        }
-        .cancel-icon {
-            font-size: 48px;
-            color: #dc3545;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: inline-block;
-        }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-        <div class="cancel-icon">❌</div>
-        <h1>Pago cancelado</h1>
-        {% if paquete %}
-        <p>No se completó la compra de: <strong>{{ paquete.nombre }}</strong></p>
-        {% else %}
-        <p>No se completó la compra.</p>
-        {% endif %}
-        <a href="{{ url_for('paquetes.listar_paquetes') }}" style="background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            Volver a los paquetes
-        </a>
+{% extends "base.html" %}
+
+{% block title %}Pago Cancelado | ShalaFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 rounded-4 text-center mt-4 border-top border-danger border-5">
+            <div class="card-body p-5">
+                <div class="mb-4">
+                    <i class="bi bi-x-circle-fill text-danger" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-3">Pago Cancelado</h2>
+
+                <p class="text-muted mb-4 fs-5">
+                    {% if paquete %}
+                        No se completó la compra de: <br><strong>{{ paquete.nombre }}</strong>
+                    {% else %}
+                        No se completó la compra. No se ha realizado ningún cargo a tu tarjeta.
+                    {% endif %}
+                </p>
+
+                <div class="d-grid gap-3 mt-4">
+                    <a href="{{ url_for('paquetes.listar_paquetes') }}" class="btn btn-outline-danger btn-lg rounded-pill fw-bold">
+                        <i class="bi bi-arrow-left me-2"></i>Volver a la tienda
+                    </a>
+                    <a href="{{ url_for('auth.panel') }}" class="text-muted text-decoration-none small fw-medium">
+                        Ir al panel principal
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-  </body>
-</html>
+</div>
+{% endblock %}

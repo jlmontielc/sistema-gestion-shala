@@ -1,75 +1,68 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Mi Progreso</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
-        .dashboard-header { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-        .metric-card { 
-            background: white; 
-            padding: 20px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            text-align: center; 
-            border-bottom: 4px solid; 
-        }
-        .metric-card.green { border-color: #28a745; }
-        .metric-card.red { border-color: #dc3545; }
-        .metric-card.blue { border-color: #007bff; }
-        
-        .metric-value { font-size: 2.5em; font-weight: bold; margin: 10px 0; }
-        .metric-title { color: #6c757d; font-size: 0.9em; text-transform: uppercase; font-weight: bold;}
-        
-        .notes-section { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .note-item { border-left: 4px solid #17a2b8; padding-left: 15px; margin-bottom: 20px; background-color: #f8f9fa; padding: 15px; border-radius: 0 8px 8px 0;}
-        .note-date { color: #6c757d; font-size: 0.85em; margin-bottom: 5px;}
-        
-        .btn-back { background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-bottom: 20px;}
-    </style>
-</head>
-<body>
-    <a href="{{ url_for('auth.panel') }}" class="btn-back">⬅ Volver al Panel</a>
-    
-    <h2 style="color: #343a40;">📈 Mi Progreso - Resumen de {{ nombre_mes }}</h2>
+{% extends "base.html" %}
 
-    <div class="dashboard-header">
-        <div class="metric-card green">
-            <div class="metric-title">✅ Asistencias</div>
-            <div class="metric-value" style="color: #28a745;">{{ asistencias }}</div>
-        </div>
-        
-        <div class="metric-card red">
-            <div class="metric-title">❌ Faltas</div>
-            <div class="metric-value" style="color: #dc3545;">{{ faltas }}</div>
-        </div>
-        
-        <div class="metric-card blue">
-            <div class="metric-title">🏆 Tasa de Asistencia</div>
-            <div class="metric-value" style="color: #007bff;">{{ tasa }}%</div>
+{% block title %}Mi Progreso | ShalaFlow{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <div>
+        <h2 class="fw-bold text-dark mb-0">📈 Mi Progreso</h2>
+        <p class="text-muted mb-0">Resumen de {{ nombre_mes }}</p>
+    </div>
+    <a href="{{ url_for('auth.panel') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
+        <i class="bi bi-arrow-left"></i> Volver al Panel
+    </a>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-success border-2 shadow-sm rounded-4 text-center h-100">
+            <div class="card-body p-4">
+                <h6 class="text-success text-uppercase fw-bold mb-3">✅ Asistencias</h6>
+                <h1 class="display-4 fw-bold text-success mb-0">{{ asistencias }}</h1>
+            </div>
         </div>
     </div>
+    <div class="col-md-4">
+        <div class="card border-danger border-2 shadow-sm rounded-4 text-center h-100">
+            <div class="card-body p-4">
+                <h6 class="text-danger text-uppercase fw-bold mb-3">❌ Faltas</h6>
+                <h1 class="display-4 fw-bold text-danger mb-0">{{ faltas }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-primary border-2 shadow-sm rounded-4 text-center h-100">
+            <div class="card-body p-4">
+                <h6 class="text-primary text-uppercase fw-bold mb-3">🏆 Tasa de Asistencia</h6>
+                <h1 class="display-4 fw-bold text-primary mb-0">{{ tasa }}%</h1>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <div class="notes-section">
-        <h3 style="color: #343a40; margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px;">📝 Notas de mis Instructores</h3>
-        
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-journal-text text-info me-2"></i>Notas de mis Instructores</h4>
+        <hr>
+    </div>
+    <div class="card-body p-4 pt-2">
         {% if notas %}
-            {% for n in notas %}
-                <div class="note-item">
-                    <div class="note-date">📅 {{ n.fecha }} - <strong>{{ n.titulo }}</strong></div>
-                    <p style="margin: 5px 0 0 0; color: #495057;"><i>"{{ n.comentario }}"</i></p>
+            <div class="list-group list-group-flush">
+                {% for n in notas %}
+                <div class="list-group-item px-0 py-3 border-start border-info border-4 mb-3 rounded-end bg-light shadow-sm">
+                    <div class="ms-3">
+                        <div class="text-muted small mb-1"><i class="bi bi-calendar-event me-1"></i>{{ n.fecha }} - <strong>{{ n.titulo }}</strong></div>
+                        <p class="mb-0 text-dark fst-italic">"{{ n.comentario }}"</p>
+                    </div>
                 </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         {% else %}
-            <div style="text-align: center; padding: 20px; color: #6c757d;">
-                <p>Aún no tienes comentarios o notas registradas.</p>
+            <div class="text-center py-5">
+                <i class="bi bi-chat-square-text text-muted display-4 opacity-25 d-block mb-3"></i>
+                <p class="text-muted">Aún no tienes comentarios o notas registradas.</p>
             </div>
         {% endif %}
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

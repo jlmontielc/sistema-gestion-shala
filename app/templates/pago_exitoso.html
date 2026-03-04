@@ -1,45 +1,35 @@
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <title>Pago exitoso</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #f0f8f0;
-        }
-        .success-icon {
-            font-size: 48px;
-            color: #28a745;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: inline-block;
-        }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-        <div class="success-icon">✅</div>
-        <h1>¡Pago exitoso! 🎉</h1>
-        
-        {% if paquete %}
-            <p>Has comprado: <strong>{{ paquete.nombre }}</strong></p>
-            <p>Sesiones agregadas: <strong>{{ paquete.sesiones_incluidas }}</strong></p>
-            <p>Tu nuevo saldo de clases: <strong>{{ current_user.saldo_clases }}</strong></p>
-        {% else %}
-            <p>Tu pago se ha procesado correctamente.</p>
-        {% endif %}
-        
-        <br>
-        <a href="{{ url_for('auth.panel') }}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-            Volver al panel
-        </a>
+{% extends "base.html" %}
+
+{% block title %}Pago Exitoso | ShalaFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0 rounded-4 text-center mt-4 border-top border-success border-5">
+            <div class="card-body p-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+                </div>
+                <h2 class="fw-bold text-dark mb-3">¡Pago Exitoso! 🎉</h2>
+
+                {% if paquete %}
+                    <div class="alert alert-success bg-success bg-opacity-10 border-0 rounded-3 mb-4 text-start">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2"><i class="bi bi-box-seam me-2"></i> Has comprado: <strong>{{ paquete.nombre }}</strong></li>
+                            <li class="mb-2"><i class="bi bi-plus-circle me-2"></i> Sesiones agregadas: <strong>{{ paquete.sesiones_incluidas }}</strong></li>
+                        </ul>
+                        <hr class="border-success opacity-25">
+                        <h5 class="mb-0 text-success fw-bold text-center">Tu nuevo saldo: {{ current_user.saldo_clases }} clases</h5>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-4 fs-5">Tu reserva o pago se ha procesado correctamente.</p>
+                {% endif %}
+
+                <a href="{{ url_for('auth.panel') }}" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm px-5 mt-2 w-100">
+                    <i class="bi bi-house-door me-2"></i>Volver a mi Panel
+                </a>
+            </div>
+        </div>
     </div>
-  </body>
-</html>
+</div>
+{% endblock %}

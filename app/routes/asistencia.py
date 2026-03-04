@@ -38,7 +38,8 @@ def tomar_asistencia(clase_id):
             reserva.estado = 'ASISTIDO' if estado == 'ASISTIO' else 'NO_SHOW'
 
         db.session.commit()
-        return "<h1>¡Asistencia y Notas Guardadas! ✅</h1><a href='/panel'>Volver al Panel</a>"
+        flash("¡Asistencia y notas guardadas correctamente! ✅", "success")
+        return redirect(url_for('clases.listar_clases'))
 
     return render_template('tomar_asistencia.html', clase=clase, reservas=reservas)
 @asistencia_bp.route('/mis-notas')

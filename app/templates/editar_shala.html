@@ -1,69 +1,59 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>✏️ Editar Shala: {{ shala.nombre }}</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f8f9fa; }
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; color: #495057; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
-        .form-group textarea { height: 100px; resize: vertical; }
-        .btn-submit { background-color: #007bff; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; transition: background-color 0.3s; }
-        .btn-submit:hover { background-color: #0056b3; }
-        .btn-cancel { background-color: #6c757d; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin-left: 10px; }
-        .required::after { content: " *"; color: #dc3545; }
-        .coord-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .header-edit { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <div class="header-edit">
-            <h1>✏️ Editar Shala: {{ shala.nombre }}</h1>
-            <a href="{{ url_for('shalas.detalle_shala', id=shala.id) }}" class="btn-cancel">❌ Cancelar</a>
+{% extends "base.html" %}
+
+{% block title %}Editar Shala | ShalaFlow{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow border-0 rounded-4 mt-2">
+            <div class="card-body p-5">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="fw-bold text-dark mb-0">✏️ Editar Shala</h2>
+                        <p class="text-muted mb-0">Modificando la sede: {{ shala.nombre }}</p>
+                    </div>
+                    <a href="{{ url_for('shalas.detalle_shala', id=shala.id) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="bi bi-x-lg"></i> Cancelar
+                    </a>
+                </div>
+                <hr class="mb-4 opacity-25">
+                
+                <form method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6 form-floating mb-3">
+                            <input type="text" id="nombre" name="nombre" class="form-control" value="{{ shala.nombre }}" placeholder="Nombre" required>
+                            <label for="nombre" class="ms-2">Nombre de la Shala *</label>
+                        </div>
+                        
+                        <div class="col-md-6 form-floating mb-3">
+                            <input type="text" id="telefono" name="telefono" class="form-control" value="{{ shala.telefono or '' }}" placeholder="Teléfono">
+                            <label for="telefono" class="ms-2">Teléfono</label>
+                        </div>
+
+                        <div class="col-12 form-floating mb-3">
+                            <input type="text" id="direccion" name="direccion" class="form-control" value="{{ shala.direccion }}" placeholder="Dirección" required>
+                            <label for="direccion" class="ms-2">Dirección Física *</label>
+                        </div>
+                        
+                        <div class="col-12 form-floating mb-3">
+                            <textarea id="descripcion" name="descripcion" class="form-control" style="height: 100px" placeholder="Descripción">{{ shala.descripcion or '' }}</textarea>
+                            <label for="descripcion" class="ms-2">Descripción</label>
+                        </div>
+                        
+                        <div class="col-12 form-floating mb-4">
+                            <input type="url" id="logo_url" name="logo_url" class="form-control" value="{{ shala.logo_url or '' }}" placeholder="URL Logo">
+                            <label for="logo_url" class="ms-2">URL del Logo (Opcional)</label>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow-sm">
+                            <i class="bi bi-save me-2"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <hr>
-        
-        <form method="POST">
-            <div class="form-group">
-                <label for="nombre" class="required">Nombre de la Shala</label>
-                <input type="text" id="nombre" name="nombre" value="{{ shala.nombre }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="direccion" class="required">Dirección</label>
-                <input type="text" id="direccion" name="direccion" value="{{ shala.direccion }}" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="telefono">Teléfono</label>
-                <input type="text" id="telefono" name="telefono" value="{{ shala.telefono or '' }}">
-            </div>
-            
-            <div class="form-group">
-                <label for="descripcion">Descripción</label>
-                <textarea id="descripcion" name="descripcion">{{ shala.descripcion or '' }}</textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="logo_url">URL del Logo</label>
-                <input type="url" id="logo_url" name="logo_url" value="{{ shala.logo_url or '' }}">
-            </div>
-            
-            <div style="text-align: center; margin-top: 30px;">
-                <button type="submit" class="btn-submit">💾 Guardar Cambios</button>
-                <a href="{{ url_for('shalas.detalle_shala', id=shala.id) }}" class="btn-cancel">Cancelar</a>
-            </div>
-        </form>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}
