@@ -59,3 +59,21 @@ def comprar_paquete(id):
     <p>Tu nuevo saldo es: <strong>{current_user.saldo_clases} clases</strong>.</p>
     <a href='/panel'>Volver al Panel</a>
     """
+
+@paquetes_bp.route('/editar/<int:id>', methods=['GET', 'POST']) 
+@login_required
+@role_required('ADMIN', 'ADMIN_SHALA')
+def editar_paquete(id):
+    paquete = Paquete.query.get_or_404(id)
+    
+    if request.method == 'POST':
+        paquete.nombre = request.form.get('nombre')
+        paquete.descripcion = request.form.get('descripcion')
+        paquete.precio = float(request.form.get('precio'))
+        paquete.sesiones_incluidas = int(request.form.get('sesiones_incluidas'))
+        
+        db.session.commit()
+        flash('Paquete actualizado correctamente.', 'success')
+        return redirect(url_for('paquetes.listar_paquetes'))
+    
+    return render_template('editar_paquete.html', paquete=paquete)

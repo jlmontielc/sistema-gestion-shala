@@ -161,6 +161,10 @@
                             <em>(Vista de Administrador)</em>
                         </div>
                     {% endif %}
+
+                    {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
+                        <a href="{{ url_for('paquetes.editar_paquete', id=p.id) }}" class="btn btn-warning" style="margin-top: 10px; display: inline-block;">✏️ Editar</a>
+                    {% endif %}
                 </div>
             </div>
             {% else %}
