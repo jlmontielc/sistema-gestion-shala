@@ -1,36 +1,56 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Registro de Usuario</title>
-</head>
-<body>
-    <h2>Registro de Usuario</h2>
+{% extends "base.html" %}
 
-    <form method="POST" action="{{ url_for('auth.registro') }}">
-        <label>Nombre</label><br>
-        <input type="text" name="nombre" required><br><br>
+{% block title %}Registro | ShalaFlow{% endblock %}
 
-        <label>Email</label><br>
-        <input type="email" name="email" required><br><br>
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 rounded-4 mt-4">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary">Crea tu cuenta</h2>
+                    <p class="text-muted">Únete a la comunidad ShalaFlow</p>
+                </div>
 
-        <label>Contraseña</label><br>
-        <input type="password" name="password" required><br><br>
+                <form method="POST" action="{{ url_for('auth.registro') }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nombre Completo</label>
+                        <input type="text" name="nombre" class="form-control form-control-lg" placeholder="Ej: Ana Pérez" required>
+                    </div>
 
-        <label>Rol</label><br>
-        <select name="rol" required>
-            <option value="">Seleccionar rol...</option>
-            <option value="YOGUI">Yogui (Alumno)</option>
-            <option value="INSTRUCTOR">Instructor</option>
-            {% if current_user.is_authenticated and current_user.rol == "ADMIN" %}
-            <option value="ADMIN">Admin Global</option>
-            <option value="ADMIN_SHALA">Admin Shala</option>
-            {% endif %}
-        </select><br><br>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" name="email" class="form-control form-control-lg" placeholder="tu@email.com" required>
+                    </div>
 
-        <button type="submit">Registrar</button>
-    </form>
-    
-    <p>¿Ya tienes cuenta? <a href="{{ url_for('auth.iniciar_sesion') }}">Inicia sesión aquí</a></p>
-</body>
-</html>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Contraseña</label>
+                        <input type="password" name="password" class="form-control form-control-lg" placeholder="Crea una contraseña segura" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">¿Qué rol tendrás?</label>
+                        <select name="rol" class="form-select form-select-lg" required>
+                            <option value="">Selecciona una opción...</option>
+                            <option value="YOGUI">🧘‍♀️ Yogui (Alumno)</option>
+                            <option value="INSTRUCTOR">👨‍🏫 Instructor</option>
+                            
+                            {% if current_user.is_authenticated and current_user.rol == "ADMIN" %}
+                                <option value="ADMIN">👑 Admin Global</option>
+                                <option value="ADMIN_SHALA">🏢 Admin de Shala</option>
+                            {% endif %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill">Registrarme</button>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted mb-0">¿Ya tienes cuenta?</p>
+                    <a href="{{ url_for('auth.iniciar_sesion') }}" class="text-decoration-none fw-bold">Inicia sesión aquí</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
