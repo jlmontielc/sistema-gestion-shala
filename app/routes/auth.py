@@ -9,6 +9,7 @@ from app.models.clase import Clase
 from app.models.shala import Shala
 from app.routes.decoradores import role_required
 from app.models.notificacion import Notificacion
+from app.factories.usuario_factory import UsuarioFactory
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -45,11 +46,11 @@ def registro():
 
         password_hash = generate_password_hash(password)
 
-        usuario = Usuario(
+        usuario = UsuarioFactory.crear_usuario(
+            rol,
             nombre=nombre,
             email=email,
-            password_hash=password_hash,
-            rol=rol
+            password_hash=password_hash
         )
 
         db.session.add(usuario)
