@@ -2,6 +2,9 @@ from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app import db
 from app.routes.decoradores import role_required
+import io
+import csv
+from flask import Response
 
 analisis_bp = Blueprint('analisis', __name__, url_prefix='/analisis')
 
@@ -52,4 +55,68 @@ def dashboard():
         usuarios_instructores=usuarios_instructores,
         usuarios_admins=usuarios_admins,
         clases_data=clases_data
+    )
+
+@analisis_bp.route('/exportar-usuarios')
+@login_required
+@role_required('ADMIN', 'ADMIN_SHALA')
+def exportar_usuarios():
+    from app.models.usuario import Usuario
+    
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerow(['ID', 'Nombre', 'Email', 'Rol', 'Saldo Clases'])
+    
+    # Aquí puedes agregar los filtros por shala_id si lo deseas
+    usuarios = Usuario.query.all() 
+    
+    for u in usuarios:
+        cw.writerow([u.id, u.nombre, u.email, u.rol, u.saldo_clases])
+    
+    return Response(
+        si.getvalue(), 
+        mimetype="text/csv", 
+        headers={"Content-Disposition": "attachment;filename=usuarios.csv"}
+    )
+
+@analisis_bp.route('/exportar-reservas')
+@login_required
+@role_required('ADMIN', 'ADMIN_SHALA')
+def exportar_reservas():
+    from app.models.reserva import Reserva
+    
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerow(['ID', 'Clase', 'ID Alumno', 'Estado', 'Fecha'])
+    
+    reservas = Reserva.query.all()
+    
+    for r in reservas:
+        cw.writerow([r.id, r.clase.titulo, r.yogui_id, r.estado, r.fecha_reserva.strftime('%d/%m/%Y %H:%M')])
+        
+    return Response(
+        si.getvalue(), 
+        mimetype="text/csv", 
+        headers={"Content-Disposition": "attachment;filename=reservas.csv"}
+    )
+
+@analisis_bp.route('/reporte-ingresos')
+@login_required
+@role_required('ADMIN', 'ADMIN_SHALA')
+def reporte_ingresos():
+    from app.models.pago import Pago
+    
+    si = io.StringIO()
+    cw = csv.writer(si)
+    cw.writerow(['ID', 'Monto ($)', 'Metodo', 'Estado', 'Fecha'])
+    
+    pagos = Pago.query.order_by(Pago.fecha_pago.desc()).all()
+    
+    for p in pagos:
+        cw.writerow([p.id, p.monto, p.metodo_pago, p.estado, p.fecha_pago.strftime('%d/%m/%Y %H:%M')])
+        
+    return Response(
+        si.getvalue(), 
+        mimetype="text/csv", 
+        headers={"Content-Disposition": "attachment;filename=ingresos.csv"}
     )

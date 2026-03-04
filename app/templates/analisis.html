@@ -125,10 +125,10 @@
             <div class="card-body p-4">
                 <h5 class="fw-bold text-dark mb-4">📋 Informes Rápidos</h5>
                 <div class="d-grid gap-3">
-                    <a href="#" class="btn btn-outline-primary text-start rounded-pill"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar Usuarios (CSV)</a>
-                    <a href="#" class="btn btn-outline-primary text-start rounded-pill"><i class="bi bi-cloud-download me-2"></i> Exportar Reservas</a>
-                    <a href="#" class="btn btn-outline-success text-start rounded-pill"><i class="bi bi-graph-up-arrow me-2"></i> Reporte de Ingresos</a>
-                </div>
+    <a href="{{ url_for('analisis.exportar_usuarios') }}" class="btn btn-outline-primary text-start rounded-pill"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar Usuarios (CSV)</a>
+    <a href="{{ url_for('analisis.exportar_reservas') }}" class="btn btn-outline-primary text-start rounded-pill"><i class="bi bi-cloud-download me-2"></i> Exportar Reservas</a>
+    <a href="{{ url_for('analisis.reporte_ingresos') }}" class="btn btn-outline-success text-start rounded-pill"><i class="bi bi-graph-up-arrow me-2"></i> Reporte de Ingresos</a>
+</div>
             </div>
         </div>
     </div>
