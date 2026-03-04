@@ -78,78 +78,22 @@ def crear_clase():
 @clases_bp.route('/listar')
 @login_required
 def listar_clases():
-    clases = Clase.query.order_by(Clase.fecha_hora.asc()).all()
+    clases_db = Clase.query.order_by(Clase.fecha_hora.asc()).all()
+    from app.models.usuario import Usuario
     
-    # Encabezado de la página
-    html = """
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>Lista de Clases</title>
-        <style>
-            body { font-family: sans-serif; padding: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            .btn { text-decoration: none; padding: 8px 15px; border-radius: 5px; color: white; }
-            .btn-blue { background-color: #007bff; }
-            .btn-green { background-color: #28a745; }
-            .btn-gray { background-color: #6c757d; }
-        </style>
-    </head>
-    <body>
-        <h1>📅 Calendario de Clases</h1>
-        <a href="/panel" class="btn btn-gray">⬅ Volver al Panel</a>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Clase</th>
-                    <th>Instructor</th> <th>Fecha</th>
-                    <th>Horario</th>
-                    <th>Modalidad</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody>
-    """
-    
-    # Lógica para mostrar botones según el Rol
-    for c in clases:
-        boton_accion = ""
-        
-        # SI ERES ALUMNO (YOGUI) -> Ves botón de RESERVAR
-        if current_user.rol == 'YOGUI':
-            boton_accion = f'<a href="/reservas/crear/{c.id}" class="btn btn-blue">Reservar Lugar</a>'
-            
-        # SI ERES INSTRUCTOR O ADMIN -> Ves botón de TOMAR ASISTENCIA
-        elif current_user.rol in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA']:
-            boton_accion = f'<a href="/asistencia/tomar/{c.id}" class="btn btn-green">📋 Tomar Lista</a>'
-
-        # 👇 MAGIA NUEVA: Buscamos al instructor de esta clase 👇
-        from app.models.usuario import Usuario, Instructor
+    # Preparamos los datos ordenados para mandarlos a la plantilla
+    clases_data = []
+    for c in clases_db:
         instructor = Usuario.query.get(c.instructor_id)
         nombre_profe = instructor.nombre if instructor else "Por definir"
-
-        # Agregamos la columna del instructor con el enlace a su perfil
-        html += f"""
-        <tr>
-            <td><strong>{c.titulo}</strong></td>
-            <td><a href="/instructor/{c.instructor_id}" style="color: #17a2b8; font-weight: bold; text-decoration: none;">👤 {nombre_profe}</a></td>
-            <td>{c.fecha_hora.strftime('%d/%m/%Y')}</td>
-            <td>{c.fecha_hora.strftime('%H:%M')} ({c.duracion_min} min)</td>
-            <td>{c.modalidad}</td>
-            <td>
-                {boton_accion}
-            </td>
-        </tr>
-        """
-    
-    html += """
-            </tbody>
-        </table>
-    </body>
-    </html>
-    """
-    return html
+        clases_data.append({
+            'id': c.id,
+            'titulo': c.titulo,
+            'instructor_id': c.instructor_id,
+            'nombre_profe': nombre_profe,
+            'fecha_hora': c.fecha_hora,
+            'duracion_min': c.duracion_min,
+            'modalidad': c.modalidad
+        })
+        
+    return render_template('listar_clases.html', clases=clases_data)
