@@ -119,7 +119,11 @@
         <a href="{{ url_for('paquetes.crear_paquete') }}" class="btn btn-success">📦 Crear Paquete</a>
         <a href="{{ url_for('paquetes.listar_paquetes') }}" class="btn btn-info">💰 Ver Paquetes</a>
         <a href="/analisis" class="btn btn-warning">📊 Análisis de Datos</a>
-        <a href="{{ url_for('shalas.crear_shala') }}" class="btn btn-success">🏠 Crear Shala</a>
+
+        {% if usuario.rol == 'ADMIN' or (usuario.rol == 'ADMIN_SHALA' and not usuario.shala_id) %}
+            <a href="{{ url_for('shalas.crear_shala') }}" class="btn btn-success">🏠 Crear Shala</a>
+        {% endif %}
+        
         <a href="{{ url_for('shalas.listar_shalas') }}" class="btn btn-info">📋 Ver Shalas</a>
         
         <a href="{{ url_for('auth.listar_yoguis') }}" class="btn" style="background-color: #6f42c1;">👥 Gestión Yoguis</a>

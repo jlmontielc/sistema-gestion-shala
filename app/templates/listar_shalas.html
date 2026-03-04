@@ -92,9 +92,9 @@
         <h1>🏠 Shalas (Centros de Yoga)</h1>
         <div>
             <a href="{{ url_for('auth.panel') }}" class="btn-back">⬅ Panel Principal</a>
-            {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA'] %}
-                <a href="{{ url_for('shalas.crear_shala') }}" class="btn-create">➕ Crear Nueva Shala</a>
-            {% endif %}
+            {% if current_user.rol == 'ADMIN' or (current_user.rol == 'ADMIN_SHALA' and not current_user.shala_id) %}
+    <a href="{{ url_for('shalas.crear_shala') }}" class="btn-create">➕ Crear Nueva Shala</a>
+{% endif %}
         </div>
     </div>
     

@@ -10,6 +10,11 @@ shalas_bp = Blueprint('shalas', __name__, url_prefix='/shalas')
 @login_required
 @role_required('ADMIN', 'ADMIN_SHALA')
 def crear_shala():
+
+    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id is not None:
+        flash('Ya tienes una Shala asignada. No puedes crear otra.', 'error')
+        return redirect(url_for('shalas.listar_shalas'))
+
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         direccion = request.form.get('direccion')
