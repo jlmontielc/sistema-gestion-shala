@@ -117,16 +117,6 @@
                 
                 <div class="info-label">📞 Teléfono</div>
                 <div class="info-value">{{ shala.telefono or 'No registrado' }}</div>
-                
-                <div class="info-label">🗺️ Coordenadas</div>
-                <div class="info-value">
-                    {% if shala.lat and shala.lng %}
-                        Latitud: {{ shala.lat }}<br>
-                        Longitud: {{ shala.lng }}
-                    {% else %}
-                        No registradas
-                    {% endif %}
-                </div>
             </div>
             
             <div class="info-section">
