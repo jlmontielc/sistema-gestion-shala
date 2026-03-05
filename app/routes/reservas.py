@@ -1,5 +1,5 @@
 # app/routes/reservas.py
-from flask import Blueprint, redirect, url_for, render_template
+from flask import Blueprint, redirect, url_for, render_template, flash
 from flask_login import login_required, current_user
 from app import db
 from app.models.reserva import Reserva
@@ -11,35 +11,30 @@ reservas_bp = Blueprint('reservas', __name__, url_prefix='/reservas')
 
 @reservas_bp.route('/crear/<int:clase_id>')
 @login_required
-@role_required('YOGUI') # Solo los alumnos pueden reservar
+@role_required('YOGUI')
 def crear_reserva(clase_id):
     clase = Clase.query.get_or_404(clase_id)
     
-    # --- 1. NUEVO: EL CANDADO DE SEGURIDAD (Cobro) ---
+    # 1. Saldo Insuficiente
     if current_user.saldo_clases < 1:
-        return """
-        <h1>⛔ Saldo Insuficiente</h1>
-        <p>No tienes clases disponibles en tu cuenta.</p>
-        <p>Por favor, compra un paquete para continuar.</p>
-        <br>
-        <a href='/paquetes/listar'>🛒 Ir a Comprar Paquetes</a> | <a href='/panel'>Volver</a>
-        """
+        flash('⛔ Saldo Insuficiente. No tienes clases disponibles. Por favor, compra un paquete para continuar.', 'error')
+        return redirect(url_for('paquetes.listar_paquetes'))
 
-    # 2. Verificar si la clase está llena (Lógica antigua)
+    # 2. Verificar si la clase está llena
     total_reservas = Reserva.query.filter_by(clase_id=clase_id, estado='RESERVADO').count()
     if total_reservas >= clase.capacidad:
-        return "<h1>Error: La clase está llena 🚫</h1><a href='/clases/listar'>Volver</a>"
+        flash('Error: La clase está llena 🚫', 'error')
+        return redirect(url_for('clases.listar_clases'))
 
-    # 3. Verificar si ya reservó (Lógica antigua)
+    # 3. Verificar si ya reservó
     reserva_existente = Reserva.query.filter_by(clase_id=clase_id, yogui_id=current_user.id).first()
     if reserva_existente:
-        return "<h1>Ya estás inscrito en esta clase ✅</h1><a href='/clases/listar'>Volver</a>"
+        flash('Ya estás inscrito en esta clase ✅', 'info')
+        return redirect(url_for('clases.listar_clases'))
 
-    # --- 4. NUEVO: COBRAR LA ENTRADA ---
-    # Le restamos 1 al saldo del usuario
+    # 4. COBRAR LA ENTRADA
     current_user.saldo_clases -= 1 
 
-    # Creamos la reserva
     nueva_reserva = Reserva(
         clase_id=clase.id,
         yogui_id=current_user.id,
@@ -59,33 +54,19 @@ def crear_reserva(clase_id):
     db.session.add(notificacion)
     db.session.commit()
     
-    return f"""
-    <h1>¡Reserva Confirmada! </h1>
-    <p>Te esperamos en el mat.</p>
-    <hr>
-    <p>➖ Se ha descontado 1 clase de tu cuenta.</p>
-    <p>Te quedan: <strong>{current_user.saldo_clases} clases</strong> disponibles.</p>
-    <a href='/clases/listar'>Volver al calendario</a>
-    """
+    # Éxito
+    flash(f'¡Reserva Confirmada! 🎉 Se descontó 1 clase. Te quedan: {current_user.saldo_clases} clases.', 'success')
+    return redirect(url_for('clases.listar_clases'))
 
 @reservas_bp.route('/mis-reservas')
 @login_required
 @role_required('YOGUI')
 def mis_reservas():
-    # Buscar todas las reservas de este usuario
-    mis_reservas = Reserva.query.filter_by(yogui_id=current_user.id).all()
+    # Buscamos todas las reservas de este usuario ordenadas por las más recientes
+    mis_reservas = Reserva.query.filter_by(yogui_id=current_user.id).order_by(Reserva.fecha_reserva.desc()).all()
     
-    html = "<h1>Mis Reservas</h1><ul>"
-    for r in mis_reservas:
-        # Si la reserva está activa, mostramos el botón de cancelar
-        boton_cancelar = ""
-        if r.estado == 'RESERVADO':
-            boton_cancelar = f" <a href='/reservas/cancelar/{r.id}' style='color: white; background-color: red; padding: 2px 5px; text-decoration: none; border-radius: 3px; font-size: 12px;'>❌ Cancelar</a>"
-            
-        html += f"<li>{r.clase.titulo} - {r.clase.fecha_hora.strftime('%d/%m/%Y %H:%M')} ({r.estado}){boton_cancelar}</li><br>"
-        
-    html += "</ul><a href='/clases/listar'>Reservar más clases</a> | <a href='/panel'>Volver al Panel</a>"
-    return html
+    # En lugar de devolver texto plano, renderizamos una plantilla bonita
+    return render_template('mis_reservas.html', reservas=mis_reservas)
 
 
 @reservas_bp.route('/notificaciones')
@@ -119,28 +100,21 @@ def marcar_notificaciones_leidas():
 @login_required
 @role_required('YOGUI')
 def cancelar_reserva(reserva_id):
-    # 1. Buscamos la reserva en la base de datos
     reserva = Reserva.query.get_or_404(reserva_id)
     
-    # 2. Seguridad: Verificamos que sea del usuario actual
     if reserva.yogui_id != current_user.id:
-        return "<h1>Error: Esta reserva no es tuya </h1><a href='/reservas/mis-reservas'>Volver</a>"
+        flash('Error: Esta reserva no es tuya 🚫', 'error')
+        return redirect(url_for('reservas.mis_reservas'))
         
-    # 3. Seguridad: Evitar que cancele algo ya cancelado y gane saldo infinito
     if reserva.estado == 'CANCELADO':
-        return "<h1>La reserva ya estaba cancelada.</h1><a href='/reservas/mis-reservas'>Volver</a>"
+        flash('La reserva ya estaba cancelada.', 'info')
+        return redirect(url_for('reservas.mis_reservas'))
 
-    # 4. HACEMOS EL REEMBOLSO:
-    reserva.estado = 'CANCELADO'          # Cambiamos el estado
-    current_user.saldo_clases += 1        # Le devolvemos 1 clase a su cartera
+    # Reembolso
+    reserva.estado = 'CANCELADO'
+    current_user.saldo_clases += 1
 
-    # Guardamos los cambios en la base de datos
     db.session.commit()
     
-    return f"""
-    <h1>Reserva Cancelada.</h1>
-    <p>Se ha devuelto 1 clase a tu cuenta.</p>
-    <p>Tu saldo actual es: <strong>{current_user.saldo_clases} clases</strong>.</p>
-    <br>
-    <a href='/reservas/mis-reservas'>Volver a mis reservas</a> | <a href='/panel'>Volver al panel</a>
-    """
+    flash(f'¡Reserva Cancelada! 🛑 Se devolvió 1 clase a tu cuenta. Saldo actual: {current_user.saldo_clases}.', 'success')
+    return redirect(url_for('reservas.mis_reservas'))
