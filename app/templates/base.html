@@ -32,6 +32,11 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
                     {% if current_user.is_authenticated %}
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="{{ url_for('shalas.listar_shalas') }}">
+                                <i class="bi bi-search"></i> Buscar Shalas
+                            </a>
+                        </li>
                         
                         <li class="nav-item">
                             <a class="nav-link fw-bold" href="{{ url_for('auth.panel') }}">Mi Panel</a>
