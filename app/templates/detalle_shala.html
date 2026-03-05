@@ -52,6 +52,35 @@
     </div>
 
     <div class="col-lg-8">
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-header bg-white border-0 p-4">
+                <h4 class="fw-bold mb-0">Instructores de la Shala</h4>
+            </div>
+            <div class="card-body p-4 pt-0">
+                <div class="row g-3">
+                    {% for instructor in instructores %}
+                        <div class="col-md-6">
+                            <div class="border rounded-4 p-3 h-100 bg-light bg-opacity-25">
+                                <div class="d-flex justify-content-between align-items-start gap-3">
+                                    <div>
+                                        <h6 class="fw-bold mb-1">{{ instructor.nombre }}</h6>
+                                        <p class="text-muted small mb-0">{{ instructor.email }}</p>
+                                    </div>
+                                    <a href="{{ url_for('auth.ver_instructor', id=instructor.id) }}" class="btn btn-outline-primary btn-sm rounded-pill">
+                                        Ver perfil
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="col-12">
+                            <p class="text-muted mb-0">Aún no hay instructores asignados a esta shala.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
                 <h4 class="fw-bold mb-0"> Clases Programadas</h4>

@@ -71,9 +71,26 @@ def detalle_shala(id):
         return redirect(url_for('shalas.listar_shalas'))
     
     from app.models.clase import Clase
+    from app.models.usuario import Usuario, Instructor
+
     clases = Clase.query.filter_by(shala_id=id).all()
+    instructores = (
+        Usuario.query
+        .join(Instructor, Instructor.id == Usuario.id)
+        .filter(
+            Usuario.rol == 'INSTRUCTOR',
+            Instructor.shala_id == id
+        )
+        .order_by(Usuario.nombre.asc())
+        .all()
+    )
     
-    return render_template('detalle_shala.html', shala=shala, clases=clases)
+    return render_template(
+        'detalle_shala.html',
+        shala=shala,
+        clases=clases,
+        instructores=instructores
+    )
 
 @shalas_bp.route('/editar/<int:id>', methods=['GET', 'POST'])
 @login_required
