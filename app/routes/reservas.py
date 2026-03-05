@@ -60,7 +60,7 @@ def crear_reserva(clase_id):
     db.session.commit()
     
     return f"""
-    <h1>¡Reserva Confirmada! 🎉</h1>
+    <h1>¡Reserva Confirmada! </h1>
     <p>Te esperamos en el mat.</p>
     <hr>
     <p>➖ Se ha descontado 1 clase de tu cuenta.</p>
@@ -124,7 +124,7 @@ def cancelar_reserva(reserva_id):
     
     # 2. Seguridad: Verificamos que sea del usuario actual
     if reserva.yogui_id != current_user.id:
-        return "<h1>Error: Esta reserva no es tuya 🚫</h1><a href='/reservas/mis-reservas'>Volver</a>"
+        return "<h1>Error: Esta reserva no es tuya </h1><a href='/reservas/mis-reservas'>Volver</a>"
         
     # 3. Seguridad: Evitar que cancele algo ya cancelado y gane saldo infinito
     if reserva.estado == 'CANCELADO':
@@ -138,7 +138,7 @@ def cancelar_reserva(reserva_id):
     db.session.commit()
     
     return f"""
-    <h1>¡Reserva Cancelada! 🛑</h1>
+    <h1>Reserva Cancelada.</h1>
     <p>Se ha devuelto 1 clase a tu cuenta.</p>
     <p>Tu saldo actual es: <strong>{current_user.saldo_clases} clases</strong>.</p>
     <br>

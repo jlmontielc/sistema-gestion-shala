@@ -86,6 +86,10 @@ def listar_clases():
     for c in clases_db:
         instructor = Usuario.query.get(c.instructor_id)
         nombre_profe = instructor.nombre if instructor else "Por definir"
+        puede_tomar_lista = current_user.rol in ['ADMIN', 'ADMIN_SHALA'] or (
+            current_user.rol == 'INSTRUCTOR' and c.instructor_id == current_user.id
+        )
+
         clases_data.append({
             'id': c.id,
             'titulo': c.titulo,
@@ -93,7 +97,8 @@ def listar_clases():
             'nombre_profe': nombre_profe,
             'fecha_hora': c.fecha_hora,
             'duracion_min': c.duracion_min,
-            'modalidad': c.modalidad
+            'modalidad': c.modalidad,
+            'puede_tomar_lista': puede_tomar_lista
         })
         
     return render_template('listar_clases.html', clases=clases_data)

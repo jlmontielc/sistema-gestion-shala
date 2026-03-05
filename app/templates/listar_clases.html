@@ -59,7 +59,7 @@
                             <a href="/reservas/crear/{{ clase.id }}" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm hover-card">
                                 Reservar
                             </a>
-                        {% elif current_user.rol in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA'] %}
+                        {% elif current_user.rol in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA'] and clase.puede_tomar_lista %}
                             <a href="/asistencia/tomar/{{ clase.id }}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm">
                                 <i class="bi bi-clipboard-check me-1"></i> Tomar Lista
                             </a>

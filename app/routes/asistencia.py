@@ -15,6 +15,11 @@ asistencia_bp = Blueprint('asistencia', __name__, url_prefix='/asistencia')
 @role_required('ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR')
 def tomar_asistencia(clase_id):
     clase = Clase.query.get_or_404(clase_id)
+    
+    if current_user.rol == 'INSTRUCTOR' and clase.instructor_id != current_user.id:
+        flash("Solo el instructor asignado a esta clase puede tomar asistencia.", "error")
+        return redirect(url_for('clases.listar_clases'))
+    
     reservas = Reserva.query.filter_by(clase_id=clase_id, estado='RESERVADO').all()
 
     if request.method == 'POST':
