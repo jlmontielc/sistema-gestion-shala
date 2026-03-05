@@ -184,10 +184,23 @@ def detalle_yogui(id):
     
     if request.method == 'POST':
         # Guardar cambios editados por el admin
-        yogui.nombre = request.form.get('nombre')
-        yogui.email = request.form.get('email')
+        nombre = (request.form.get('nombre') or '').strip()
+        email = (request.form.get('email') or '').strip()
+
+        if not nombre or not email:
+            flash('El nombre y el correo son obligatorios.', 'error')
+            return redirect(url_for('auth.detalle_yogui', id=id))
+
+        yogui.nombre = nombre
+        yogui.email = email
         yogui.telefono = request.form.get('telefono')
-        yogui.saldo_clases = int(request.form.get('saldo_clases', 0))
+        
+        try:
+            yogui.saldo_clases = int(request.form.get('saldo_clases', 0))
+        except (TypeError, ValueError):
+            flash('El saldo de clases debe ser un número válido.', 'error')
+            return redirect(url_for('auth.detalle_yogui', id=id))
+
         db.session.commit()
         flash('Datos del alumno actualizados correctamente.', 'success')
         return redirect(url_for('auth.detalle_yogui', id=id))
