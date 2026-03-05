@@ -8,7 +8,7 @@ paquetes_bp = Blueprint('paquetes', __name__, url_prefix='/paquetes')
 
 @paquetes_bp.route('/crear', methods=['GET', 'POST'])
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required('ADMIN')
 def crear_paquete():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
@@ -54,7 +54,7 @@ def comprar_paquete(id):
     
     # 3. Mensaje de éxito
     return f"""
-    <h1>¡Compra Exitosa! 🎉</h1>
+    <h1>Compra Exitosa.</h1>
     <p>Has comprado: {paquete.nombre}</p>
     <p>Tu nuevo saldo es: <strong>{current_user.saldo_clases} clases</strong>.</p>
     <a href='/panel'>Volver al Panel</a>
@@ -62,7 +62,7 @@ def comprar_paquete(id):
 
 @paquetes_bp.route('/editar/<int:id>', methods=['GET', 'POST']) 
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required('ADMIN')
 def editar_paquete(id):
     paquete = Paquete.query.get_or_404(id)
     

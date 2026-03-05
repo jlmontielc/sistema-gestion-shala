@@ -64,4 +64,14 @@ def create_app():
     def load_user(user_id):
         return Usuario.query.get(int(user_id))
 
+    @app.template_filter('rol_nombre')
+    def rol_nombre(rol):
+        nombres = {
+            'ADMIN': 'Administrador',
+            'ADMIN_SHALA': 'Shala',
+            'INSTRUCTOR': 'Instructor',
+            'YOGUI': 'Yogui'
+        }
+        return nombres.get(rol, rol)
+
     return app
