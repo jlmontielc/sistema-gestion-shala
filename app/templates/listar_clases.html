@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Calendario de Clases | ShalaFlow{% endblock %}
+{% block title %}Calendario de Clases | StudioZen{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
     <div>
-        <h2 class="fw-bold text-dark mb-0">📅 Calendario de Clases</h2>
+        <h2 class="fw-bold text-dark mb-0"> Calendario de Clases</h2>
         <p class="text-muted mb-0">Encuentra tu próxima sesión y reserva tu lugar en el mat.</p>
     </div>
     {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR'] %}

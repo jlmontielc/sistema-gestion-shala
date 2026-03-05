@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Paquetes y Planes | ShalaFlow{% endblock %}
+{% block title %}Paquetes | StudioZen{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -21,7 +21,7 @@
 
 {% block content %}
 <div class="text-center mb-5 mt-3">
-    <h2 class="fw-bold text-dark display-5">✨ Elige tu Pase Ideal</h2>
+    <h2 class="fw-bold text-dark display-5"> Elige tu Paquete Ideal</h2>
     <p class="text-muted fs-5">Invierte en tu bienestar. Encuentra el paquete perfecto para tu práctica.</p>
 </div>
 
@@ -39,7 +39,7 @@
             
             <div class="card-body p-4 d-flex flex-column">
                 <p class="text-center text-muted fst-italic mb-4 px-2">
-                    "{{ p.descripcion or 'El pase perfecto para mantener tu práctica al día.' }}"
+                    "{{ p.descripcion or 'El paquete perfecto para mantener tu práctica al día.' }}"
                 </p>
                 
                 <ul class="list-unstyled mb-4 mt-auto">

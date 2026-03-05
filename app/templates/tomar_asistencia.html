@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Tomar Asistencia | ShalaFlow{% endblock %}
+{% block title %}Tomar Asistencia | StudioZen{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
     <div>
-        <h2 class="fw-bold text-dark mb-0">📋 Tomar Asistencia</h2>
+        <h2 class="fw-bold text-dark mb-0"> Tomar Asistencia</h2>
         <p class="text-muted mb-0">{{ clase.titulo }} - {{ clase.fecha_hora.strftime('%d/%m/%Y a las %H:%M') }}</p>
     </div>
     <a href="{{ url_for('clases.listar_clases') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
@@ -17,7 +17,7 @@
     {% if reservas|length == 0 %}
         <div class="card-body text-center py-5">
             <i class="bi bi-people text-muted display-1 opacity-25 d-block mb-3"></i>
-            <h5 class="text-muted">⚠️ No hay alumnos inscritos en esta clase.</h5>
+            <h5 class="text-muted"> No hay alumnos inscritos en esta clase.</h5>
         </div>
     {% else %}
         <form method="POST">
@@ -27,7 +27,7 @@
                         <tr>
                             <th class="ps-4 py-3">Alumno</th>
                             <th class="text-center py-3">¿Asistió?</th>
-                            <th class="pe-4 py-3">📝 Notas de Progreso</th>
+                            <th class="pe-4 py-3"> Notas de Progreso</th>
                         </tr>
                     </thead>
                     <tbody>

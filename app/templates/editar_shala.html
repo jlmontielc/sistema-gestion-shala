@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Editar Shala | ShalaFlow{% endblock %}
+{% block title %}Editar Shala | StudioZen{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
@@ -9,7 +9,7 @@
             <div class="card-body p-5">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h2 class="fw-bold text-dark mb-0">✏️ Editar Shala</h2>
+                        <h2 class="fw-bold text-dark mb-0"> Editar Shala</h2>
                         <p class="text-muted mb-0">Modificando la sede: {{ shala.nombre }}</p>
                     </div>
                     <a href="{{ url_for('shalas.detalle_shala', id=shala.id) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">

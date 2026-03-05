@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Panel de Análisis | ShalaFlow{% endblock %}
+{% block title %}Panel de Análisis | StudioZen{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
     <div>
-        <h2 class="fw-bold text-dark mb-0">📊 Panel de Análisis</h2>
+        <h2 class="fw-bold text-dark mb-0"> Panel de Análisis</h2>
         <p class="text-muted mb-0">Estadísticas y rendimiento de tu Shala.</p>
     </div>
     <a href="{{ url_for('auth.panel') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
@@ -13,7 +13,7 @@
     </a>
 </div>
 
-<h4 class="fw-bold text-secondary mt-4 mb-3 border-bottom pb-2">📈 Estadísticas Generales</h4>
+<h4 class="fw-bold text-secondary mt-4 mb-3 border-bottom pb-2"> Estadísticas Generales</h4>
 <div class="row g-3 mb-4">
     <div class="col-md-4 col-sm-6">
         <div class="card shadow-sm border-0 rounded-4 text-center h-100">
@@ -57,7 +57,7 @@
     </div>
 </div>
 
-<h4 class="fw-bold text-secondary mt-5 mb-3 border-bottom pb-2">👥 Distribución de Usuarios</h4>
+<h4 class="fw-bold text-secondary mt-5 mb-3 border-bottom pb-2"> Distribución de Usuarios</h4>
 <div class="row g-3 mb-5">
     <div class="col-md-4">
         <div class="card border-success border-2 shadow-sm rounded-4 text-center">
@@ -89,7 +89,7 @@
     <div class="col-lg-8">
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
             <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
-                <h5 class="fw-bold text-dark mb-3">📅 Últimas 10 Clases Programadas</h5>
+                <h5 class="fw-bold text-dark mb-3"> Últimas 10 Clases Programadas</h5>
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -123,7 +123,7 @@
     <div class="col-lg-4">
         <div class="card shadow-sm border-0 rounded-4 bg-light h-100">
             <div class="card-body p-4">
-                <h5 class="fw-bold text-dark mb-4">📋 Informes Rápidos</h5>
+                <h5 class="fw-bold text-dark mb-4"> Informes Rápidos</h5>
                 <div class="d-grid gap-3">
     <a href="{{ url_for('analisis.exportar_usuarios') }}" class="btn btn-outline-primary text-start rounded-pill"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Exportar Usuarios (CSV)</a>
     <a href="{{ url_for('analisis.exportar_reservas') }}" class="btn btn-outline-primary text-start rounded-pill"><i class="bi bi-cloud-download me-2"></i> Exportar Reservas</a>
