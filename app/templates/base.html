@@ -43,7 +43,7 @@
                         </li>
 
                         {% if current_user.rol == 'YOGUI' %}
-                            <li class="nav-item"><a class="nav-link" href="{{ url_for('paquetes.listar_paquetes') }}">Comprar Pase</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('paquetes.listar_paquetes') }}">Comprar paquetes</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('clases.listar_clases') }}">Calendario</a></li>
                         {% endif %}
 
