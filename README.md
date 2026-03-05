@@ -1,4 +1,4 @@
-# 🧘 StudioZen - Sistema de Gestión de Shalas / Centros de Yoga
+# StudioZen - Sistema de Gestión de Shalas / Centros de Yoga
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)
@@ -7,7 +7,7 @@
 
 **StudioZen** es una plataforma web integral para la administración de centros de yoga (shalas). Permite gestionar clases, instructores, alumnos, reservas, pagos y asistencia, con un sistema de roles claro: Administrador Global, Administrador de Shala, Instructor y Alumno (Yogui).
 
-## ✨ Características principales
+## Características principales
 
 - **Autenticación y roles**: Registro e inicio de sesión con roles diferenciados.
 - **Gestión de shalas**: CRUD de centros de yoga, con asignación de administradores por shala.
@@ -20,7 +20,7 @@
 - **Panel de análisis**: Estadísticas globales y por shala (usuarios, clases, reservas, ingresos) con exportación a CSV.
 - **Diseño responsivo**: Interfaz moderna y amigable gracias a Bootstrap 5.
 
-## 🛠️ Tecnologías utilizadas
+## Tecnologías utilizadas
 
 - **Backend**: Python 3.9+, Flask, Flask-Login, Flask-SQLAlchemy
 - **Base de datos**: MySQL (con PyMySQL)
@@ -29,14 +29,14 @@
 - **Despliegue**: Vercel (serverless functions), Aiven (base de datos)
 - **Control de versiones**: Git, GitHub
 
-## 📋 Requisitos previos
+## Requisitos previos
 
 - Python 3.9 o superior
 - MySQL (local o en la nube, por ejemplo Aiven)
 - Cuenta en Stripe (para pagos)
 - (Opcional) Cuenta en Vercel para despliegue
 
-## 🚀 Instalación y configuración local
+## Instalación y configuración local
 
 Sigue estos pasos para ejecutar el proyecto en tu máquina local:
 
@@ -133,7 +133,7 @@ El proyecto está configurado para desplegarse fácilmente en Vercel.
 4. **Desplegar**:
    Conecta tu repositorio a Vercel y cada push a la rama principal generará un nuevo despliegue automático.
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
 ```
 studiozen/
@@ -152,14 +152,14 @@ studiozen/
 └── README.md                   # Este archivo
 ```
 
-## 🧑‍🤝‍🧑 Roles de usuario
+## Roles de usuario
 
 - **Administrador Global (ADMIN)**: Acceso completo a todas las funcionalidades, gestión de shalas, instructores y alumnos.
 - **Administrador de Shala (ADMIN_SHALA)**: Administra una única shala (clases, instructores, alumnos, estadísticas).
 - **Instructor (INSTRUCTOR)**: Crea clases, toma asistencia y añade comentarios a los alumnos.
 - **Alumno (YOGUI)**: Reserva clases, compra paquetes, ve su progreso y recibe notificaciones.
 
-## 🧪 Funcionalidades clave
+## Funcionalidades clave
 
 ### Para el alumno (Yogui)
 - Visualizar clases disponibles y reservar (con saldo o pago individual).
@@ -185,15 +185,15 @@ studiozen/
 - Gestionar todos los instructores y alumnos.
 - Ver análisis global de todo el sistema.
 
-## 📄 Licencia
+## Licencia
 
 Este proyecto es desarrollado con fines académicos para la asignatura Ingeniería de Software de la Universidad del Zulia (LUZ). Queda prohibido su uso comercial sin autorización expresa de los autores.
 
-## 👥 Autores
+## Autores
 
 - **Jorge Montiel** - [@jlmontielc](https://github.com/jlmontielc)
 - **Yainder Muñoz** - [@yainderm](https://github.com/yainderm)
 
-## 🙏 Agradecimientos
+## Agradecimientos
 
 - Prof. Yaskelly Yedra, por la guía en el desarrollo del proyecto.
