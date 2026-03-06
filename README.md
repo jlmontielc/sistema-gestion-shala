@@ -141,15 +141,21 @@ studiozen/
 │   ├── models/              # Modelos de base de datos
 │   ├── routes/               # Controladores (auth, clases, shalas, etc.)
 │   ├── templates/            # Plantillas HTML (Jinja2)
-│   ├── static/               # Archivos estáticos (CSS, JS, imágenes)
+│   ├── static/               # Archivos estáticos (imagen favicon)
 │   ├── factories/            # Fábrica de usuarios (Factory Method)
 │   └── __init__.py           # Inicialización de la aplicación Flask
-├── run.py                     # Punto de entrada para desarrollo local
-├── wsgi.py                     # Punto de entrada para Vercel
-├── vercel.json                 # Configuración de despliegue en Vercel
-├── requirements.txt            # Dependencias Python
-├── .env                        # Variables de entorno (no subir a git)
-└── README.md                   # Este archivo
+├── tests/                    # Carpeta de pruebas
+|   ├── test_integration/     # Pruebas de integración (flujos completos)
+|   ├── test_models/          # Pruebas de modelos (base de datos)
+|   ├── test_routes/          # Pruebas de rutas (controladores)
+|   ├── conftest.py           # Configuración y fixtures globales
+├── run.py                    # Punto de entrada para desarrollo local
+├── wsgi.py                   # Punto de entrada para Vercel
+├── vercel.json               # Configuración de despliegue en Vercel
+├── requirements.txt          # Dependencias Python
+├── pytest.ini                # Configuración de pytest
+├── .env                      # Variables de entorno (no subir a git)
+└── README.md                 # Este archivo
 ```
 
 ## Roles de usuario
