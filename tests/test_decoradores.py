@@ -1,60 +1,36 @@
-import pytest
-from flask import Flask
-from flask_login import LoginManager, login_user
-from app.routes.decoradores import role_required
+from werkzeug.security import generate_password_hash
+
 from app.models.usuario import Usuario
 
-@pytest.fixture
-def test_app():
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'test'
-    login_manager = LoginManager()
-    login_manager.init_app(app)
 
-    @login_manager.user_loader
-    def load_user(user_id):
-        return Usuario.query.get(int(user_id))
-
-    @app.route('/test-admin')
-    @role_required('ADMIN')
-    def test_admin():
-        return 'OK'
-
-    @app.route('/test-admin-shala')
-    @role_required('ADMIN_SHALA')
-    def test_admin_shala():
-        return 'OK'
-
-    return app
-
-def test_role_required_admin_con_permiso(test_app, client, db_session):
-    # Crear usuario admin
+def test_role_required_admin_con_permiso(client, db_session):
     admin = Usuario(
-        nombre="Admin",
-        email="a@test.com",
-        password_hash="hash",
-        rol="ADMIN"
+        nombre='Admin',
+        email='a@test.com',
+        password_hash=generate_password_hash('admin'),
+        rol='ADMIN',
     )
     db_session.add(admin)
     db_session.commit()
 
-    with test_app.test_request_context():
-        login_user(admin)
-        response = client.get('/test-admin')
-        assert response.status_code == 200
-        assert response.data == b'OK'
+    client.post('/iniciar-sesion', data={'email': 'a@test.com', 'password': 'admin'})
+    response = client.get('/administracion')
 
-def test_role_required_admin_sin_permiso(test_app, client, db_session):
+    assert response.status_code == 200
+    assert b'Panel de administraci' in response.data
+
+
+def test_role_required_admin_sin_permiso(client, db_session):
     yogui = Usuario(
-        nombre="Yogui",
-        email="y@test.com",
-        password_hash="hash",
-        rol="YOGUI"
+        nombre='Yogui',
+        email='y@test.com',
+        password_hash=generate_password_hash('yogui'),
+        rol='YOGUI',
     )
     db_session.add(yogui)
     db_session.commit()
 
-    with test_app.test_request_context():
-        login_user(yogui)
-        response = client.get('/test-admin')
-        assert response.status_code == 302  # Redirige a panel
+    client.post('/iniciar-sesion', data={'email': 'y@test.com', 'password': 'yogui'})
+    response = client.get('/administracion')
+
+    assert response.status_code == 302
