@@ -1,4 +1,3 @@
-import pytest
 from app.models.usuario import Usuario
 
 def test_iniciar_sesion_exitoso(client, init_database):
@@ -43,3 +42,50 @@ def test_registro_nuevo_yogui(client, app):
         nuevo_user = Usuario.query.filter_by(email='nuevo@test.com').first()
         assert nuevo_user is not None
         assert nuevo_user.rol == 'YOGUI'
+
+
+def test_registro_rechaza_datos_incompletos(client):
+    response = client.post('/registro', data={
+        'nombre': 'Falta Correo',
+        'password': 'password123',
+        'rol': 'YOGUI',
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b'Datos incompletos' in response.data
+
+
+def test_registro_rechaza_rol_invalido(client):
+    response = client.post('/registro', data={
+        'nombre': 'Usuario Invalido',
+        'email': 'invalido@test.com',
+        'password': 'password123',
+        'rol': 'SUPERUSER',
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert 'Rol inválido' in response.get_data(as_text=True)
+
+
+def test_registro_rechaza_correo_duplicado(client, init_database):
+    response = client.post('/registro', data={
+        'nombre': 'Admin Duplicado',
+        'email': 'admin@studiozen.com',
+        'password': 'password123',
+        'rol': 'YOGUI',
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert 'El correo electrónico ya está registrado' in response.get_data(as_text=True)
+
+
+def test_registro_restringe_creacion_de_admin_sin_autenticacion(client):
+    response = client.post('/registro', data={
+        'nombre': 'Admin Bloqueado',
+        'email': 'admin_bloqueado@test.com',
+        'password': 'password123',
+        'rol': 'ADMIN',
+    }, follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b'Solo el Admin Global puede crear administradores' in response.data
