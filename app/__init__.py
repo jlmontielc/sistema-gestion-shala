@@ -1,8 +1,7 @@
-
 import pymysql
 pymysql.install_as_MySQLdb()
 import os
-from dotenv import load_dotenv # type: ignore
+from dotenv import load_dotenv 
 
 from flask import Flask, render_template, redirect, url_for
 from flask_login import LoginManager

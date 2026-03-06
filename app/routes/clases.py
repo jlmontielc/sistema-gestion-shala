@@ -1,4 +1,3 @@
-# app/routes/clases.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from datetime import datetime
@@ -29,7 +28,7 @@ def crear_clase():
         link = request.form.get('room_link')
         shala_id = request.form.get('shala_id') 
         
-        # 👇 NUEVO: Capturamos el instructor que el Admin eligió en el formulario
+        # Capturamos el instructor que el Admin eligió en el formulario
         instructor_id = request.form.get('instructor_id')
 
         instructor = Usuario.query.filter_by(id=int(instructor_id), rol='INSTRUCTOR').first() if instructor_id else None
@@ -55,7 +54,7 @@ def crear_clase():
             capacidad=int(capacidad),
             modalidad=modalidad,
             room_link=link,
-            # 👇 NUEVO: Guardamos al instructor elegido, NO al usuario actual
+            # Guardamos al instructor elegido, NO al usuario actual
             instructor_id=int(instructor_id),
             shala_id=int(shala_id)
         )
