@@ -198,7 +198,7 @@ Este proyecto es desarrollado con fines académicos para la asignatura Ingenier�
 ## Autores
 
 - **Jorge Montiel** - [@jlmontielc](https://github.com/jlmontielc)
-- **Yainder Muñoz** - [@yainderm](https://github.com/yainderm)
+- **Yainder Muñoz** - [@yainderj](https://github.com/yainderj)
 
 ## Agradecimientos
 

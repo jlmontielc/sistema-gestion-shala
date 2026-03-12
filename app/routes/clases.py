@@ -62,7 +62,8 @@ def crear_clase():
         db.session.add(nueva_clase)
         db.session.commit()
 
-        return "¡Clase creada exitosamente! <a href='/panel'>Volver</a>"
+        flash("¡Clase creada exitosamente! ✅", "success")
+    return redirect(url_for('clases.listar_clases'))
 
     # Buscamos las sedes y TODOS los instructores para mostrarlos en el formulario
     if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
