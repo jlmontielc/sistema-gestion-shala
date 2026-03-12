@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
 from app.models.paquete import Paquete
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 
 paquetes_bp = Blueprint("paquetes", __name__, url_prefix="/paquetes")
 
@@ -31,7 +31,7 @@ def crear_paquete():
         flash("¡Paquete global creado exitosamente!", "success")
         return redirect(url_for("auth.panel"))
 
-    return render_template("crear_paquete.html")
+    return render_template("paquetes/crear_paquete.html")
 
 
 @paquetes_bp.route("/listar")
@@ -40,7 +40,7 @@ def listar_paquetes():
     # Esta vista servirá para que el Shala vea qué vende
     # Y luego la usaremos para que el Yogui vea qué comprar
     todos_paquetes = Paquete.query.all()
-    return render_template("paquetes.html", paquetes=todos_paquetes)
+    return render_template("paquetes/paquetes.html", paquetes=todos_paquetes)
 
 
 @paquetes_bp.route("/comprar/<int:id>")
@@ -80,4 +80,4 @@ def editar_paquete(id):
         flash("Paquete actualizado correctamente.", "success")
         return redirect(url_for("paquetes.listar_paquetes"))
 
-    return render_template("editar_paquete.html", paquete=paquete)
+    return render_template("paquetes/editar_paquete.html", paquete=paquete)

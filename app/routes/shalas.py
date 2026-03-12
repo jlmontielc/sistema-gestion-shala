@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
 from app.models.shala import Shala
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 
 shalas_bp = Blueprint("shalas", __name__, url_prefix="/shalas")
 
@@ -49,7 +49,7 @@ def crear_shala():
         flash(f'✅ Shala "{nombre}" creada exitosamente', "success")
         return redirect(url_for("shalas.listar_shalas"))
 
-    return render_template("crear_shala.html")
+    return render_template("shala/crear_shala.html")
 
 
 @shalas_bp.route("/listar")
@@ -63,7 +63,7 @@ def listar_shalas():
     else:
         shalas = Shala.query.all()
     
-    return render_template("listar_shalas.html", shalas=shalas)
+    return render_template("shala/listar_shalas.html", shalas=shalas)
 
 
 @shalas_bp.route("/detalle/<int:id>")
@@ -87,7 +87,7 @@ def detalle_shala(id):
     )
     
     return render_template(
-        "detalle_shala.html", shala=shala, clases=clases, instructores=instructores
+        "shala/detalle_shala.html", shala=shala, clases=clases, instructores=instructores
     )
 
 
@@ -113,7 +113,7 @@ def editar_shala(id):
         flash(f'✅ Shala "{shala.nombre}" actualizada exitosamente', "success")
         return redirect(url_for("shalas.detalle_shala", id=id))
     
-    return render_template("editar_shala.html", shala=shala)
+    return render_template("shala/editar_shala.html", shala=shala)
 
 
 @shalas_bp.route("/eliminar/<int:id>", methods=["POST"])

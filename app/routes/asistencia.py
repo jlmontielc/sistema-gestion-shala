@@ -5,7 +5,7 @@ from datetime import datetime
 from app.models.clase import Clase
 from app.models.reserva import Reserva
 from app.models.asistencia import Asistencia
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 
 asistencia_bp = Blueprint("asistencia", __name__, url_prefix="/asistencia")
 
@@ -48,7 +48,7 @@ def tomar_asistencia(clase_id):
         flash("¡Asistencia y notas guardadas correctamente! ✅", "success")
         return redirect(url_for("clases.listar_clases"))
 
-    return render_template("tomar_asistencia.html", clase=clase, reservas=reservas)
+    return render_template("asistencia/tomar_asistencia.html", clase=clase, reservas=reservas)
 
 
 @asistencia_bp.route("/mis-notas")
@@ -117,7 +117,7 @@ def mis_notas():
 
     # Ahora en lugar de devolver texto plano, llamamos a un archivo HTML
     return render_template(
-        "mis_notas.html",
+        "dashboard/mis_notas.html",
         nombre_mes=nombre_mes,
         asistencias=asistencias_mes,
         faltas=faltas_mes,

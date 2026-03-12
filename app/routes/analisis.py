@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, flash, redirect, url_for
 from flask_login import login_required, current_user
 from app import db
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 import io
 import csv
 from flask import Response
@@ -79,7 +79,7 @@ def dashboard():
         clases_data = Clase.query.limit(10).all()
     
     return render_template(
-        "analisis.html",
+        "dashboard/analisis.html",
         total_usuarios=total_usuarios,
         total_clases=total_clases,
         total_reservas=total_reservas,

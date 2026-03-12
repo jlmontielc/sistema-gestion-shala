@@ -4,7 +4,7 @@ from app import db
 from app.models.reserva import Reserva
 from app.models.clase import Clase
 from app.models.notificacion import Notificacion
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 
 reservas_bp = Blueprint("reservas", __name__, url_prefix="/reservas")
 
@@ -79,7 +79,7 @@ def mis_reservas():
     )
 
     # En lugar de devolver texto plano, renderizamos una plantilla bonita
-    return render_template("mis_reservas.html", reservas=mis_reservas)
+    return render_template("reservas/mis_reservas.html", reservas=mis_reservas)
 
 
 @reservas_bp.route("/notificaciones")
@@ -92,7 +92,7 @@ def ver_notificaciones():
         .all()
     )
 
-    return render_template("notificaciones.html", notificaciones=notificaciones)
+    return render_template("reservas/notificaciones.html", notificaciones=notificaciones)
 
 
 @reservas_bp.route("/notificaciones/marcar-todas-leidas")

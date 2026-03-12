@@ -132,7 +132,7 @@ def pago_exitoso():
             db.session.commit()
         flash("Compra de paquete completada. Gracias.", "success")
         return render_template(
-            "pago_exitoso.html", paquete=paquete, saldo=current_user.saldo_clases
+            "pagos/pago_exitoso.html", paquete=paquete, saldo=current_user.saldo_clases
         )
 
     clase_id = metadata.get("clase_id")
@@ -146,13 +146,13 @@ def pago_exitoso():
         db.session.add(reserva)
         db.session.commit()
         flash("Reserva confirmada. Nos vemos en clase.", "success")
-        return render_template("pago_exitoso.html")
+        return render_template("pagos/pago_exitoso.html")
 
     flash("Pago procesado, pero no se pudo asociar a ninguna acción.", "warning")
-    return render_template("pago_exitoso.html")
+    return render_template("pagos/pago_exitoso.html")
 
 
 @pagos_bp.route("/pago-cancelado")
 @login_required
 def pago_cancelado():
-    return render_template("pago_cancelado.html")
+    return render_template("pagos/pago_cancelado.html")

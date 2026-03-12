@@ -7,7 +7,7 @@ from app.models.reserva import Reserva
 from app.models.pago import Pago
 from app.models.clase import Clase
 from app.models.shala import Shala
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 from app.models.notificacion import Notificacion
 from app.factories.usuario_factory import UsuarioFactory
 
@@ -57,7 +57,7 @@ def registro():
         flash("Registro exitoso. Por favor inicia sesión.", "success")
         return redirect(url_for("auth.iniciar_sesion"))
 
-    return render_template("registro.html")
+    return render_template("auth/registro.html")
 
 
 @auth_bp.route("/iniciar-sesion", methods=["GET", "POST"])
@@ -76,7 +76,7 @@ def iniciar_sesion():
         flash("Credenciales incorrectas", "error")
         return redirect(url_for("auth.iniciar_sesion"))
 
-    return render_template("iniciar_sesion.html")
+    return render_template("auth/iniciar_sesion.html")
 
 
 @auth_bp.route("/panel")
@@ -88,7 +88,7 @@ def panel():
             yogui_id=current_user.id, leida=False
         ).count()
     return render_template(
-        "panel.html",
+        "dashboard/panel.html",
         usuario=current_user,
         notificaciones_no_leidas=notificaciones_no_leidas,
     )
@@ -153,7 +153,7 @@ def perfil():
         flash("¡Perfil actualizado con éxito!", "success")
         return redirect(url_for("auth.panel"))
 
-    return render_template("perfil.html")
+    return render_template("users/perfil.html")
 
 
 @auth_bp.route("/instructor/<int:id>")
@@ -167,7 +167,7 @@ def ver_instructor(id):
         flash("El usuario no es un instructor válido.", "error")
         return redirect(url_for("auth.panel"))
 
-    return render_template("perfil_instructor.html", instructor=instructor_user)
+    return render_template("users/perfil_instructor.html", instructor=instructor_user)
 
 
 # ==========================================
@@ -186,7 +186,7 @@ def listar_yoguis():
             .distinct()
         )
     yoguis = yoguis_query.all()
-    return render_template("listar_yoguis.html", yoguis=yoguis)
+    return render_template("users/listar_yoguis.html", yoguis=yoguis)
 
 
 @auth_bp.route("/admin/yogui/<int:id>", methods=["GET", "POST"])
@@ -236,7 +236,7 @@ def detalle_yogui(id):
     pagos = Pago.query.filter_by(yogui_id=id).order_by(Pago.fecha_pago.desc()).all()
     
     return render_template(
-        "detalle_yogui.html", yogui=yogui, reservas=reservas, pagos=pagos
+        "users/detalle_yogui.html", yogui=yogui, reservas=reservas, pagos=pagos
     )
 
 
@@ -284,7 +284,7 @@ def listar_instructores():
             Instructor.shala_id == current_user.shala_id
         )
     instructores = instructores_query.all()
-    return render_template("listar_instructores.html", instructores=instructores)
+    return render_template("users/listar_instructores.html", instructores=instructores)
 
 
 @auth_bp.route("/admin/instructor/<int:id>", methods=["GET", "POST"])
@@ -350,7 +350,7 @@ def detalle_instructor_admin(id):
         Clase.query.filter_by(instructor_id=id).order_by(Clase.fecha_hora.desc()).all()
     )
     return render_template(
-        "detalle_instructor_admin.html",
+        "users/detalle_instructor_admin.html",
         instructor=instructor,
         clases=clases,
         shalas=shalas,
