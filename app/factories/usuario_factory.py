@@ -17,30 +17,30 @@ class UsuarioFactory:
     """Factory Method para crear usuarios por rol."""
 
     _creadores: Dict[str, Callable[[DatosCreacionUsuario], Usuario]] = {
-        'YOGUI': lambda datos: Usuario(
+        "YOGUI": lambda datos: Usuario(
             nombre=datos.nombre,
             email=datos.email,
             password_hash=datos.password_hash,
-            rol='YOGUI',
+            rol="YOGUI",
             saldo_clases=0,
         ),
-        'INSTRUCTOR': lambda datos: Usuario(
+        "INSTRUCTOR": lambda datos: Usuario(
             nombre=datos.nombre,
             email=datos.email,
             password_hash=datos.password_hash,
-            rol='INSTRUCTOR',
+            rol="INSTRUCTOR",
         ),
-        'ADMIN_SHALA': lambda datos: Usuario(
+        "ADMIN_SHALA": lambda datos: Usuario(
             nombre=datos.nombre,
             email=datos.email,
             password_hash=datos.password_hash,
-            rol='ADMIN_SHALA',
+            rol="ADMIN_SHALA",
         ),
-        'ADMIN': lambda datos: Usuario(
+        "ADMIN": lambda datos: Usuario(
             nombre=datos.nombre,
             email=datos.email,
             password_hash=datos.password_hash,
-            rol='ADMIN',
+            rol="ADMIN",
         ),
     }
 

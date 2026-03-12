@@ -4,45 +4,48 @@ from app import db
 from app.models.paquete import Paquete
 from app.routes.decoradores import role_required
 
-paquetes_bp = Blueprint('paquetes', __name__, url_prefix='/paquetes')
+paquetes_bp = Blueprint("paquetes", __name__, url_prefix="/paquetes")
 
-@paquetes_bp.route('/crear', methods=['GET', 'POST'])
+
+@paquetes_bp.route("/crear", methods=["GET", "POST"])
 @login_required
-@role_required('ADMIN')
+@role_required("ADMIN")
 def crear_paquete():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        descripcion = request.form.get('descripcion')
-        precio = request.form.get('precio')
-        sesiones = request.form.get('sesiones_incluidas')
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        descripcion = request.form.get("descripcion")
+        precio = request.form.get("precio")
+        sesiones = request.form.get("sesiones_incluidas")
 
         # Creamos el paquete SIN el shala_id (quedará como global)
         nuevo_paquete = Paquete(
             nombre=nombre,
             descripcion=descripcion,
             precio=float(precio),
-            sesiones_incluidas=int(sesiones)
+            sesiones_incluidas=int(sesiones),
         )
 
         db.session.add(nuevo_paquete)
         db.session.commit()
 
         flash("¡Paquete global creado exitosamente!", "success")
-        return redirect(url_for('auth.panel'))
+        return redirect(url_for("auth.panel"))
 
-    return render_template('crear_paquete.html')
+    return render_template("crear_paquete.html")
 
-@paquetes_bp.route('/listar')
+
+@paquetes_bp.route("/listar")
 @login_required
 def listar_paquetes():
     # Esta vista servirá para que el Shala vea qué vende
     # Y luego la usaremos para que el Yogui vea qué comprar
     todos_paquetes = Paquete.query.all()
-    return render_template('paquetes.html', paquetes=todos_paquetes)
+    return render_template("paquetes.html", paquetes=todos_paquetes)
 
-@paquetes_bp.route('/comprar/<int:id>')
+
+@paquetes_bp.route("/comprar/<int:id>")
 @login_required
-@role_required('YOGUI')
+@role_required("YOGUI")
 def comprar_paquete(id):
     # 1. Buscamos qué paquete quiere comprar
     paquete = Paquete.query.get_or_404(id)
@@ -60,20 +63,21 @@ def comprar_paquete(id):
     <a href='/panel'>Volver al Panel</a>
     """
 
-@paquetes_bp.route('/editar/<int:id>', methods=['GET', 'POST']) 
+
+@paquetes_bp.route("/editar/<int:id>", methods=["GET", "POST"])
 @login_required
-@role_required('ADMIN')
+@role_required("ADMIN")
 def editar_paquete(id):
     paquete = Paquete.query.get_or_404(id)
     
-    if request.method == 'POST':
-        paquete.nombre = request.form.get('nombre')
-        paquete.descripcion = request.form.get('descripcion')
-        paquete.precio = float(request.form.get('precio'))
-        paquete.sesiones_incluidas = int(request.form.get('sesiones_incluidas'))
+    if request.method == "POST":
+        paquete.nombre = request.form.get("nombre")
+        paquete.descripcion = request.form.get("descripcion")
+        paquete.precio = float(request.form.get("precio"))
+        paquete.sesiones_incluidas = int(request.form.get("sesiones_incluidas"))
         
         db.session.commit()
-        flash('Paquete actualizado correctamente.', 'success')
-        return redirect(url_for('paquetes.listar_paquetes'))
-    
-    return render_template('editar_paquete.html', paquete=paquete)
+        flash("Paquete actualizado correctamente.", "success")
+        return redirect(url_for("paquetes.listar_paquetes"))
+
+    return render_template("editar_paquete.html", paquete=paquete)

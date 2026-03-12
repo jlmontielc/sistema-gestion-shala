@@ -11,125 +11,139 @@ from app.routes.decoradores import role_required
 from app.models.notificacion import Notificacion
 from app.factories.usuario_factory import UsuarioFactory
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route('/registro', methods=['GET', 'POST'])
+
+@auth_bp.route("/registro", methods=["GET", "POST"])
 def registro():
-    if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        rol = request.form.get('rol')
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        email = request.form.get("email")
+        password = request.form.get("password")
+        rol = request.form.get("rol")
 
         if not nombre or not email or not password or not rol:
             flash("Datos incompletos", "error")
-            return redirect(url_for('auth.registro'))
-        
-        roles_validos = ['YOGUI', 'INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA']
+            return redirect(url_for("auth.registro"))
+
+        roles_validos = ["YOGUI", "INSTRUCTOR", "ADMIN", "ADMIN_SHALA"]
         if rol not in roles_validos:
-            flash('Rol inválido', 'error')
-            return redirect(url_for('auth.registro'))
+            flash("Rol inválido", "error")
+            return redirect(url_for("auth.registro"))
 
-        if rol in ['ADMIN', 'ADMIN_SHALA']:
-            if not current_user.is_authenticated or current_user.rol != 'ADMIN':
-                flash('Solo el Admin Global puede crear administradores.', 'error')
-                return redirect(url_for('auth.registro'))
+        if rol in ["ADMIN", "ADMIN_SHALA"]:
+            if not current_user.is_authenticated or current_user.rol != "ADMIN":
+                flash("Solo el Admin Global puede crear administradores.", "error")
+                return redirect(url_for("auth.registro"))
 
-        if rol == 'ADMIN' and Usuario.query.filter_by(rol='ADMIN').first():
-            flash('Ya existe un Admin Global en el sistema.', 'error')
-            return redirect(url_for('auth.registro'))
+        if rol == "ADMIN" and Usuario.query.filter_by(rol="ADMIN").first():
+            flash("Ya existe un Admin Global en el sistema.", "error")
+            return redirect(url_for("auth.registro"))
 
         usuario_existente = Usuario.query.filter_by(email=email).first()
         if usuario_existente:
             flash("El correo electrónico ya está registrado", "error")
-            return redirect(url_for('auth.registro'))
+            return redirect(url_for("auth.registro"))
 
         password_hash = generate_password_hash(password)
 
         usuario = UsuarioFactory.crear_usuario(
-            rol,
-            nombre=nombre,
-            email=email,
-            password_hash=password_hash
+            rol, nombre=nombre, email=email, password_hash=password_hash
         )
 
         db.session.add(usuario)
         db.session.commit()
 
         flash("Registro exitoso. Por favor inicia sesión.", "success")
-        return redirect(url_for('auth.iniciar_sesion'))
+        return redirect(url_for("auth.iniciar_sesion"))
 
-    return render_template('registro.html')
+    return render_template("registro.html")
 
-@auth_bp.route('/iniciar-sesion', methods=['GET', 'POST'])
+
+@auth_bp.route("/iniciar-sesion", methods=["GET", "POST"])
 def iniciar_sesion():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    if request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
 
         usuario = Usuario.query.filter_by(email=email).first()
 
         if usuario and check_password_hash(usuario.password_hash, password):
             login_user(usuario)
             flash(f"¡Bienvenido/a {usuario.nombre}!", "success")
-            return redirect(url_for('auth.panel'))
+            return redirect(url_for("auth.panel"))
 
         flash("Credenciales incorrectas", "error")
-        return redirect(url_for('auth.iniciar_sesion'))
+        return redirect(url_for("auth.iniciar_sesion"))
 
-    return render_template('iniciar_sesion.html')
+    return render_template("iniciar_sesion.html")
 
-@auth_bp.route('/panel')
+
+@auth_bp.route("/panel")
 @login_required
 def panel():
     notificaciones_no_leidas = 0
-    if current_user.rol == 'YOGUI':
-        notificaciones_no_leidas = Notificacion.query.filter_by(yogui_id=current_user.id, leida=False).count()
-    return render_template('panel.html', usuario=current_user, notificaciones_no_leidas=notificaciones_no_leidas)
+    if current_user.rol == "YOGUI":
+        notificaciones_no_leidas = Notificacion.query.filter_by(
+            yogui_id=current_user.id, leida=False
+        ).count()
+    return render_template(
+        "panel.html",
+        usuario=current_user,
+        notificaciones_no_leidas=notificaciones_no_leidas,
+    )
 
-@auth_bp.route('/administracion')
+
+@auth_bp.route("/administracion")
 @login_required
-@role_required('ADMIN')
+@role_required("ADMIN")
 def administracion():
     return "Panel de administración"
 
-@auth_bp.route('/gestion-clases')
+
+@auth_bp.route("/gestion-clases")
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR')
+@role_required("ADMIN", "ADMIN_SHALA", "INSTRUCTOR")
 def gestion_clases():
     return "Gestión de clases"
 
-@auth_bp.route('/mis-reservas')
+
+@auth_bp.route("/mis-reservas")
 @login_required
-@role_required('YOGUI')
+@role_required("YOGUI")
 def mis_reservas():
     return "Mis reservas"
 
-@auth_bp.route('/cerrar-sesion')
+
+@auth_bp.route("/cerrar-sesion")
 @login_required
 def cerrar_sesion():
     logout_user()
     flash("Sesión cerrada correctamente", "info")
-    return redirect(url_for('auth.iniciar_sesion'))
+    return redirect(url_for("auth.iniciar_sesion"))
 
-@auth_bp.route('/perfil', methods=['GET', 'POST'])
+
+@auth_bp.route("/perfil", methods=["GET", "POST"])
 @login_required
 def perfil():
-    if request.method == 'POST':
+    if request.method == "POST":
         # Guardamos los datos básicos para cualquier usuario
-        current_user.nombre = request.form.get('nombre')
-        current_user.telefono = request.form.get('telefono')
-        
+        current_user.nombre = request.form.get("nombre")
+        current_user.telefono = request.form.get("telefono")
+
         # Si es Instructor, guardamos su biografía y certificaciones
-        if current_user.rol == 'INSTRUCTOR':
-            bio = request.form.get('bio')
-            certificaciones = request.form.get('certificaciones')
-            
+        if current_user.rol == "INSTRUCTOR":
+            bio = request.form.get("bio")
+            certificaciones = request.form.get("certificaciones")
+
             # Verificamos si ya tiene un perfil de instructor creado en la base de datos
             if not current_user.instructor:
                 # El shala de un instructor debe ser definido por un administrador.
-                flash('Tu perfil aún no tiene un shala asignado. Solicita la asignación al administrador.', 'error')
-                return redirect(url_for('auth.perfil'))
+                flash(
+                    "Tu perfil aún no tiene un shala asignado. Solicita la asignación al administrador.",
+                    "error",
+                )
+                return redirect(url_for("auth.perfil"))
             else:
                 # Si ya lo tenía, simplemente lo actualizamos
                 current_user.instructor.bio = bio
@@ -137,157 +151,190 @@ def perfil():
 
         db.session.commit()
         flash("¡Perfil actualizado con éxito!", "success")
-        return redirect(url_for('auth.panel'))
+        return redirect(url_for("auth.panel"))
 
-    return render_template('perfil.html')
+    return render_template("perfil.html")
 
-@auth_bp.route('/instructor/<int:id>')
+
+@auth_bp.route("/instructor/<int:id>")
 @login_required
 def ver_instructor(id):
     # Buscamos al usuario por su ID
     instructor_user = Usuario.query.get_or_404(id)
     
     # Verificamos que sea un instructor o un administrador
-    if instructor_user.rol not in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA']:
+    if instructor_user.rol not in ["INSTRUCTOR", "ADMIN", "ADMIN_SHALA"]:
         flash("El usuario no es un instructor válido.", "error")
-        return redirect(url_for('auth.panel'))
-        
-    return render_template('perfil_instructor.html', instructor=instructor_user)
+        return redirect(url_for("auth.panel"))
+
+    return render_template("perfil_instructor.html", instructor=instructor_user)
+
 
 # ==========================================
 # GESTIÓN DE YOGUIS (ADMIN)
 # ==========================================
-@auth_bp.route('/admin/yoguis')
+@auth_bp.route("/admin/yoguis")
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required("ADMIN", "ADMIN_SHALA")
 def listar_yoguis():
-    yoguis_query = Usuario.query.filter_by(rol='YOGUI')
-    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
-        yoguis_query = yoguis_query.join(Reserva, Reserva.yogui_id == Usuario.id).join(Clase, Clase.id == Reserva.clase_id).filter(Clase.shala_id == current_user.shala_id).distinct()
+    yoguis_query = Usuario.query.filter_by(rol="YOGUI")
+    if current_user.rol == "ADMIN_SHALA" and current_user.shala_id:
+        yoguis_query = (
+            yoguis_query.join(Reserva, Reserva.yogui_id == Usuario.id)
+            .join(Clase, Clase.id == Reserva.clase_id)
+            .filter(Clase.shala_id == current_user.shala_id)
+            .distinct()
+        )
     yoguis = yoguis_query.all()
-    return render_template('listar_yoguis.html', yoguis=yoguis)
+    return render_template("listar_yoguis.html", yoguis=yoguis)
 
-@auth_bp.route('/admin/yogui/<int:id>', methods=['GET', 'POST'])
+
+@auth_bp.route("/admin/yogui/<int:id>", methods=["GET", "POST"])
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required("ADMIN", "ADMIN_SHALA")
 def detalle_yogui(id):
     yogui = Usuario.query.get_or_404(id)
     
-    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
-        yogui_en_shala = Reserva.query.join(Clase, Clase.id == Reserva.clase_id).filter(
-            Reserva.yogui_id == id,
-            Clase.shala_id == current_user.shala_id
-        ).first()
+    if current_user.rol == "ADMIN_SHALA" and current_user.shala_id:
+        yogui_en_shala = (
+            Reserva.query.join(Clase, Clase.id == Reserva.clase_id)
+            .filter(Reserva.yogui_id == id, Clase.shala_id == current_user.shala_id)
+            .first()
+        )
         if not yogui_en_shala:
-            flash('No puedes gestionar yoguis de otra shala.', 'error')
-            return redirect(url_for('auth.listar_yoguis'))
-    
-    if request.method == 'POST':
+            flash("No puedes gestionar yoguis de otra shala.", "error")
+            return redirect(url_for("auth.listar_yoguis"))
+
+    if request.method == "POST":
         # Guardar cambios editados por el admin
-        nombre = (request.form.get('nombre') or '').strip()
-        email = (request.form.get('email') or '').strip()
+        nombre = (request.form.get("nombre") or "").strip()
+        email = (request.form.get("email") or "").strip()
 
         if not nombre or not email:
-            flash('El nombre y el correo son obligatorios.', 'error')
-            return redirect(url_for('auth.detalle_yogui', id=id))
+            flash("El nombre y el correo son obligatorios.", "error")
+            return redirect(url_for("auth.detalle_yogui", id=id))
 
         yogui.nombre = nombre
         yogui.email = email
-        yogui.telefono = request.form.get('telefono')
+        yogui.telefono = request.form.get("telefono")
         
         try:
-            yogui.saldo_clases = int(request.form.get('saldo_clases', 0))
+            yogui.saldo_clases = int(request.form.get("saldo_clases", 0))
         except (TypeError, ValueError):
-            flash('El saldo de clases debe ser un número válido.', 'error')
-            return redirect(url_for('auth.detalle_yogui', id=id))
+            flash("El saldo de clases debe ser un número válido.", "error")
+            return redirect(url_for("auth.detalle_yogui", id=id))
 
         db.session.commit()
-        flash('Datos del alumno actualizados correctamente.', 'success')
-        return redirect(url_for('auth.detalle_yogui', id=id))
-        
-    reservas = Reserva.query.filter_by(yogui_id=id).order_by(Reserva.fecha_reserva.desc()).all()
+        flash("Datos del alumno actualizados correctamente.", "success")
+        return redirect(url_for("auth.detalle_yogui", id=id))
+
+    reservas = (
+        Reserva.query.filter_by(yogui_id=id)
+        .order_by(Reserva.fecha_reserva.desc())
+        .all()
+    )
     pagos = Pago.query.filter_by(yogui_id=id).order_by(Pago.fecha_pago.desc()).all()
     
-    return render_template('detalle_yogui.html', yogui=yogui, reservas=reservas, pagos=pagos)
+    return render_template(
+        "detalle_yogui.html", yogui=yogui, reservas=reservas, pagos=pagos
+    )
 
-@auth_bp.route('/admin/yogui/eliminar/<int:id>', methods=['POST'])
+
+@auth_bp.route("/admin/yogui/eliminar/<int:id>", methods=["POST"])
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required("ADMIN", "ADMIN_SHALA")
 def eliminar_yogui(id):
     yogui = Usuario.query.get_or_404(id)
     
-    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
-        yogui_en_shala = Reserva.query.join(Clase, Clase.id == Reserva.clase_id).filter(
-            Reserva.yogui_id == id,
-            Clase.shala_id == current_user.shala_id
-        ).first()
+    if current_user.rol == "ADMIN_SHALA" and current_user.shala_id:
+        yogui_en_shala = (
+            Reserva.query.join(Clase, Clase.id == Reserva.clase_id)
+            .filter(Reserva.yogui_id == id, Clase.shala_id == current_user.shala_id)
+            .first()
+        )
         if not yogui_en_shala:
-            flash('No puedes gestionar yoguis de otra shala.', 'error')
-            return redirect(url_for('auth.listar_yoguis'))
-        
-    if Reserva.query.filter_by(yogui_id=id).first() or Pago.query.filter_by(yogui_id=id).first():
-        flash('No se puede eliminar este alumno porque tiene historial de reservas o pagos. Edita su nombre a "Inactivo" en su lugar.', 'error')
+            flash("No puedes gestionar yoguis de otra shala.", "error")
+            return redirect(url_for("auth.listar_yoguis"))
+
+    if (
+        Reserva.query.filter_by(yogui_id=id).first()
+        or Pago.query.filter_by(yogui_id=id).first()
+    ):
+        flash(
+            'No se puede eliminar este alumno porque tiene historial de reservas o pagos. Edita su nombre a "Inactivo" en su lugar.',
+            "error",
+        )
     else:
         db.session.delete(yogui)
         db.session.commit()
-        flash('Alumno eliminado del sistema.', 'success')
-    return redirect(url_for('auth.listar_yoguis'))
+        flash("Alumno eliminado del sistema.", "success")
+    return redirect(url_for("auth.listar_yoguis"))
+
 
 # ==========================================
 # GESTIÓN DE INSTRUCTORES (ADMIN)
 # ==========================================
-@auth_bp.route('/admin/instructores')
+@auth_bp.route("/admin/instructores")
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required("ADMIN", "ADMIN_SHALA")
 def listar_instructores():
-    instructores_query = Usuario.query.filter_by(rol='INSTRUCTOR')
-    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
-        instructores_query = instructores_query.join(Usuario.instructor).filter(Instructor.shala_id == current_user.shala_id)
+    instructores_query = Usuario.query.filter_by(rol="INSTRUCTOR")
+    if current_user.rol == "ADMIN_SHALA" and current_user.shala_id:
+        instructores_query = instructores_query.join(Usuario.instructor).filter(
+            Instructor.shala_id == current_user.shala_id
+        )
     instructores = instructores_query.all()
-    return render_template('listar_instructores.html', instructores=instructores)
+    return render_template("listar_instructores.html", instructores=instructores)
 
-@auth_bp.route('/admin/instructor/<int:id>', methods=['GET', 'POST'])
+
+@auth_bp.route("/admin/instructor/<int:id>", methods=["GET", "POST"])
 @login_required
-@role_required('ADMIN', 'ADMIN_SHALA')
+@role_required("ADMIN", "ADMIN_SHALA")
 def detalle_instructor_admin(id):
     instructor = Usuario.query.get_or_404(id)
-    if instructor.rol != 'INSTRUCTOR':
-        flash('El usuario seleccionado no es un instructor.', 'error')
-        return redirect(url_for('auth.listar_instructores'))
+    if instructor.rol != "INSTRUCTOR":
+        flash("El usuario seleccionado no es un instructor.", "error")
+        return redirect(url_for("auth.listar_instructores"))
 
-    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
-        if not instructor.instructor or instructor.instructor.shala_id != current_user.shala_id:
-            flash('No puedes gestionar instructores de otra shala.', 'error')
-            return redirect(url_for('auth.listar_instructores'))
+    if current_user.rol == "ADMIN_SHALA" and current_user.shala_id:
+        if (
+            not instructor.instructor
+            or instructor.instructor.shala_id != current_user.shala_id
+        ):
+            flash("No puedes gestionar instructores de otra shala.", "error")
+            return redirect(url_for("auth.listar_instructores"))
 
-
-    if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id:
-        shalas = Shala.query.filter_by(id=current_user.shala_id).order_by(Shala.nombre.asc()).all()
+    if current_user.rol == "ADMIN_SHALA" and current_user.shala_id:
+        shalas = (
+            Shala.query.filter_by(id=current_user.shala_id)
+            .order_by(Shala.nombre.asc())
+            .all()
+        )
     else:
         shalas = Shala.query.order_by(Shala.nombre.asc()).all()
     
-    if request.method == 'POST':
-        instructor.nombre = request.form.get('nombre')
-        instructor.email = request.form.get('email')
-        instructor.telefono = request.form.get('telefono')
-        shala_id = request.form.get('shala_id')
+    if request.method == "POST":
+        instructor.nombre = request.form.get("nombre")
+        instructor.email = request.form.get("email")
+        instructor.telefono = request.form.get("telefono")
+        shala_id = request.form.get("shala_id")
 
         if not shala_id:
-            flash('Debes asignar un shala al instructor.', 'error')
-            return redirect(url_for('auth.detalle_instructor_admin', id=id))
-        if current_user.rol == 'ADMIN_SHALA' and current_user.shala_id != int(shala_id):
-            flash('Solo puedes asignar instructores a tu propia shala.', 'error')
-            return redirect(url_for('auth.detalle_instructor_admin', id=id))
-        
-        bio = request.form.get('bio')
-        certificaciones = request.form.get('certificaciones')
+            flash("Debes asignar un shala al instructor.", "error")
+            return redirect(url_for("auth.detalle_instructor_admin", id=id))
+        if current_user.rol == "ADMIN_SHALA" and current_user.shala_id != int(shala_id):
+            flash("Solo puedes asignar instructores a tu propia shala.", "error")
+            return redirect(url_for("auth.detalle_instructor_admin", id=id))
+
+        bio = request.form.get("bio")
+        certificaciones = request.form.get("certificaciones")
         
         if not instructor.instructor:
             nuevo_perfil = Instructor(
                 id=instructor.id,
                 shala_id=int(shala_id),
                 bio=bio,
-                certificaciones=certificaciones
+                certificaciones=certificaciones,
             )
             db.session.add(nuevo_perfil)
         else:
@@ -296,13 +343,15 @@ def detalle_instructor_admin(id):
             instructor.instructor.certificaciones = certificaciones
             
         db.session.commit()
-        flash('Perfil del instructor actualizado correctamente.', 'success')
-        return redirect(url_for('auth.detalle_instructor_admin', id=id))
-        
-    clases = Clase.query.filter_by(instructor_id=id).order_by(Clase.fecha_hora.desc()).all()
+        flash("Perfil del instructor actualizado correctamente.", "success")
+        return redirect(url_for("auth.detalle_instructor_admin", id=id))
+
+    clases = (
+        Clase.query.filter_by(instructor_id=id).order_by(Clase.fecha_hora.desc()).all()
+    )
     return render_template(
-        'detalle_instructor_admin.html',
+        "detalle_instructor_admin.html",
         instructor=instructor,
         clases=clases,
-        shalas=shalas
+        shalas=shalas,
     )
