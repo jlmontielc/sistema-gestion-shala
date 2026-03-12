@@ -5,7 +5,7 @@ from app import db
 from app.models.usuario import Usuario, Instructor
 from app.models.clase import Clase
 from app.models.shala import Shala
-from app.routes.decoradores import role_required
+from app.common.decoradores import role_required
 
 clases_bp = Blueprint("clases", __name__, url_prefix="/clases")
 
@@ -44,7 +44,7 @@ def crear_clase():
         if not instructor or not instructor.instructor:
             flash("Debes seleccionar un instructor válido.", "error")
             return render_template(
-                "crear_clase.html",
+                "clases/crear_clase.html",
                 shalas=Shala.query.all(),
                 instructores=instructores_disponibles,
             )
@@ -52,7 +52,7 @@ def crear_clase():
         if current_user.rol == "ADMIN_SHALA" and current_user.shala_id != int(shala_id):
             flash("Solo puedes crear clases en tu propia shala.", "error")
             return render_template(
-                "crear_clase.html",
+                "clases/crear_clase.html",
                 shalas=Shala.query.filter_by(id=current_user.shala_id).all(),
                 instructores=instructores_disponibles,
             )
@@ -60,7 +60,7 @@ def crear_clase():
         if instructor.instructor.shala_id != int(shala_id):
             flash("El instructor seleccionado no pertenece al shala elegido.", "error")
             return render_template(
-                "crear_clase.html",
+                "clases/crear_clase.html",
                 shalas=Shala.query.all(),
                 instructores=instructores_disponibles,
             )
@@ -94,7 +94,7 @@ def crear_clase():
     todos_los_instructores = instructores_disponibles
     
     return render_template(
-        "crear_clase.html", shalas=todas_las_shalas, instructores=todos_los_instructores
+        "clases/crear_clase.html", shalas=todas_las_shalas, instructores=todos_los_instructores
     )
 
 
@@ -126,4 +126,4 @@ def listar_clases():
             }
         )
         
-    return render_template("listar_clases.html", clases=clases_data)
+    return render_template("clases/listar_clases.html", clases=clases_data)

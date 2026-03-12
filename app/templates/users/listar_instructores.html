@@ -1,0 +1,47 @@
+{% extends "base/base.html" %}
+
+{% block title %}Nuestros Instructores | StudioZen{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <div>
+        <h2 class="fw-bold text-dark mb-0"> Plantel de Instructores</h2>
+        <p class="text-muted mb-0">Gestiona los perfiles profesionales de tu equipo.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for instructor in instructores %}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm rounded-4 h-100 p-2">
+            <div class="card-body d-flex align-items-center">
+                <div class="flex-shrink-0 bg-info bg-opacity-10 p-4 rounded-4 me-4 text-center" style="width: 100px;">
+                    <i class="bi bi-person-workspace fs-1 text-info"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="fw-bold mb-1 text-dark">{{ instructor.nombre }}</h5>
+                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill">Activo</span>
+                    </div>
+                    <p class="text-muted small mb-2"><i class="bi bi-envelope me-1"></i> {{ instructor.email }}</p>
+                    <div class="d-flex gap-2 mt-3">
+                        <a href="{{ url_for('auth.ver_instructor', id=instructor.id) }}" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">
+                            Ver Perfil
+                        </a>
+                        {% if current_user.rol == 'ADMIN' %}
+                            <a href="{{ url_for('auth.detalle_instructor_admin', id=instructor.id) }}" class="btn btn-light btn-sm rounded-pill px-3">
+                                Gestionar Cargo
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <h4 class="text-muted">No hay instructores registrados aún.</h4>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

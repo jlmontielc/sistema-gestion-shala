@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_login import current_user
+from app.common.utilidades import rol_nombre
 
 pymysql.install_as_MySQLdb()
 
@@ -32,7 +33,7 @@ def create_app():
     def home():
         if current_user.is_authenticated:
             return redirect(url_for("auth.panel"))
-        return render_template("inicio.html")
+        return render_template("dashboard/inicio.html")
 
     from app.routes.auth import auth_bp
 
@@ -76,14 +77,6 @@ def create_app():
     def load_user(user_id):
         return Usuario.query.get(int(user_id))
 
-    @app.template_filter("rol_nombre")
-    def rol_nombre(rol):
-        nombres = {
-            "ADMIN": "Administrador",
-            "ADMIN_SHALA": "Shala",
-            "INSTRUCTOR": "Instructor",
-            "YOGUI": "Yogui",
-        }
-        return nombres.get(rol, rol)
+    app.template_filter("rol_nombre")(rol_nombre)
 
     return app

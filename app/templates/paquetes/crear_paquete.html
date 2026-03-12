@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+
+{% block title %}Crear Paquete | StudioZen{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow border-0 rounded-4 mt-4">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-dark"> Crear Nuevo Paquete</h2>
+                    <p class="text-muted">Paquete válido para todas las shalas</p>
+                </div>
+
+                <form method="POST">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="nombre" class="form-control" id="nombrePaquete" placeholder="Ej: Pase Mensual 10 Clases" required>
+                        <label for="nombrePaquete">Nombre del Paquete</label>
+                    </div>
+
+                    <div class="form-floating mb-3">
+                        <textarea name="descripcion" class="form-control" id="descPaquete" style="height: 100px" placeholder="Detalles del paquete..."></textarea>
+                        <label for="descPaquete">Descripción</label>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 form-floating">
+                            <input type="number" step="0.01" name="precio" class="form-control" id="precioPaquete" placeholder="Ej: 50.00" required>
+                            <label for="precioPaquete" class="ms-2">Precio ($)</label>
+                        </div>
+
+                        <div class="col-md-6 form-floating">
+                            <input type="number" name="sesiones_incluidas" class="form-control" id="sesionesPaquete" placeholder="Ej: 10" required>
+                            <label for="sesionesPaquete" class="ms-2">Clases Incluidas</label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm">
+                            <i class="bi bi-save me-2"></i>Crear Paquete
+                        </button>
+                        <a href="{{ url_for('auth.panel') }}" class="btn btn-light rounded-pill">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

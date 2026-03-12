@@ -1,0 +1,58 @@
+{% extends "base/base.html" %}
+
+{% block title %}Mi Perfil | StudioZen{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow border-0 rounded-4 overflow-hidden">
+            <div class="p-5 text-white text-center" style="background: linear-gradient(135deg, #2c7a7b 0%, #319795 100%);">
+                <div class="mb-3">
+                    <i class="bi bi-person-circle display-1"></i>
+                </div>
+                <h2 class="fw-bold mb-0">{{ current_user.nombre }}</h2>
+                <span class="badge bg-white text-primary rounded-pill px-3 mt-2">{{ current_user.rol | rol_nombre }}</span>
+            </div>
+
+            <div class="card-body p-5">
+                <h5 class="fw-bold mb-4"><i class="bi bi-person-gear me-2"></i>Información Personal</h5>
+                
+                <form method="POST">
+                    <div class="form-floating mb-3">
+                        <input type="text" name="nombre" class="form-control" id="pNombre" value="{{ current_user.nombre }}" required placeholder="Nombre">
+                        <label for="pNombre">Nombre Completo</label>
+                    </div>
+                    
+                    <div class="form-floating mb-4">
+                        <input type="text" name="telefono" class="form-control" id="pTel" value="{{ current_user.telefono or '' }}" placeholder="Teléfono">
+                        <label for="pTel">Teléfono de contacto</label>
+                    </div>
+
+                    {% if current_user.rol == 'INSTRUCTOR' %}
+                        <div class="p-4 bg-light rounded-4 mb-4 border border-info border-opacity-25">
+                            <h5 class="fw-bold text-info mb-3"><i class="bi bi-mortarboard me-2"></i>Perfil Profesional</h5>
+                            
+                            <div class="form-floating mb-3">
+                                <textarea name="bio" class="form-control" id="pBio" style="height: 120px" placeholder="Bio">{{ current_user.instructor.bio if current_user.instructor else '' }}</textarea>
+                                <label for="pBio">Biografía / Sobre ti</label>
+                            </div>
+                            
+                            <div class="form-floating">
+                                <textarea name="certificaciones" class="form-control" id="pCert" style="height: 100px" placeholder="Certificaciones">{{ current_user.instructor.certificaciones if current_user.instructor else '' }}</textarea>
+                                <label for="pCert">Certificaciones y Experiencia</label>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold shadow">
+                            <i class="bi bi-save me-2"></i>Guardar Cambios
+                        </button>
+                        <a href="{{ url_for('auth.panel') }}" class="btn btn-link text-muted text-decoration-none">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

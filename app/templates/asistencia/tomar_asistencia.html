@@ -1,0 +1,60 @@
+{% extends "base/base.html" %}
+
+{% block title %}Tomar Asistencia | StudioZen{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <div>
+        <h2 class="fw-bold text-dark mb-0"> Tomar Asistencia</h2>
+        <p class="text-muted mb-0">{{ clase.titulo }} - {{ clase.fecha_hora.strftime('%d/%m/%Y a las %H:%M') }}</p>
+    </div>
+    <a href="{{ url_for('clases.listar_clases') }}" class="btn btn-outline-secondary rounded-pill shadow-sm">
+        <i class="bi bi-arrow-left"></i> Volver al Calendario
+    </a>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
+    {% if reservas|length == 0 %}
+        <div class="card-body text-center py-5">
+            <i class="bi bi-people text-muted display-1 opacity-25 d-block mb-3"></i>
+            <h5 class="text-muted"> No hay alumnos inscritos en esta clase.</h5>
+        </div>
+    {% else %}
+        <form method="POST">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th class="ps-4 py-3">Alumno</th>
+                            <th class="text-center py-3">¿Asistió?</th>
+                            <th class="pe-4 py-3"> Notas de Progreso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reserva in reservas %}
+                        <tr>
+                            <td class="ps-4 fw-bold text-dark">
+                                <i class="bi bi-person-circle text-secondary me-2"></i>{{ reserva.yogui.nombre if reserva.yogui else ('Alumno #' ~ reserva.yogui_id) }}
+                            </td>
+                            <td class="text-center">
+                                <div class="form-check form-switch d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" role="switch" name="asistencia_{{ reserva.id }}" style="width: 3em; height: 1.5em;" checked>
+                                </div>
+                            </td>
+                            <td class="pe-4">
+                                <input type="text" class="form-control form-control-sm rounded-3" name="comentario_{{ reserva.id }}" placeholder="Ej: Excelente postura hoy...">
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white border-0 p-4 text-end">
+                <button type="submit" class="btn btn-success btn-lg rounded-pill fw-bold shadow-sm px-5">
+                    <i class="bi bi-save me-2"></i>Guardar Asistencia
+                </button>
+            </div>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

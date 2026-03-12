@@ -1,0 +1,47 @@
+{% extends "base/base.html" %}
+
+{% block title %}Perfil Instructor | StudioZen{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0 rounded-4 mt-4 border-top border-info border-5">
+            <div class="card-body p-5 text-center">
+                <div class="mb-4">
+                    <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                        <i class="bi bi-person-workspace display-4 text-info"></i>
+                    </div>
+                </div>
+                <h2 class="fw-bold text-dark mb-1">{{ instructor.nombre }}</h2>
+                <span class="badge bg-info text-dark rounded-pill px-3 py-2 mb-4">Instructor de Yoga</span>
+                
+                <p class="text-muted mb-4"><i class="bi bi-envelope me-2"></i>{{ instructor.email }}</p>
+                
+                <hr class="opacity-25 mb-4">
+
+                {% if instructor.instructor %}
+                    <div class="text-start mb-4">
+                        <h5 class="fw-bold text-info border-bottom pb-2"><i class="bi bi-book me-2"></i>Biografía</h5>
+                        <p class="text-secondary">{{ instructor.instructor.bio | default('Este instructor prefiere que lo conozcas en el mat. ¡Anímate a su clase!', true) }}</p>
+                    </div>
+                    
+                    <div class="text-start mb-4">
+                        <h5 class="fw-bold text-info border-bottom pb-2"><i class="bi bi-award me-2"></i>Certificaciones</h5>
+                        <p class="text-secondary">{{ instructor.instructor.certificaciones | default('No hay certificaciones registradas.', true) }}</p>
+                    </div>
+                {% else %}
+                    <div class="alert alert-light text-muted fst-italic" role="alert">
+                        Este instructor es nuevo y aún no ha completado su biografía.
+                    </div>
+                {% endif %}
+
+                <div class="mt-5">
+                    <a href="javascript:history.back()" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm fw-bold">
+                        <i class="bi bi-arrow-left me-2"></i>Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base/base.html" %}
+
+{% block title %}Calendario de Clases | StudioZen{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <div>
+        <h2 class="fw-bold text-dark mb-0"> Calendario de Clases</h2>
+        <p class="text-muted mb-0">Encuentra tu próxima sesión y reserva tu lugar en el mat.</p>
+    </div>
+    {% if current_user.rol in ['ADMIN', 'ADMIN_SHALA', 'INSTRUCTOR'] %}
+        <a href="{{ url_for('clases.crear_clase') }}" class="btn btn-primary rounded-pill fw-bold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Programar Clase
+        </a>
+    {% endif %}
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light text-secondary">
+                <tr>
+                    <th class="ps-4 py-3">Clase</th>
+                    <th class="py-3">Instructor</th>
+                    <th class="py-3">Fecha y Hora</th>
+                    <th class="py-3">Modalidad</th>
+                    <th class="text-end pe-4 py-3">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for clase in clases %}
+                <tr>
+                    <td class="ps-4 py-3">
+                        <strong class="text-dark d-block">{{ clase.titulo }}</strong>
+                        <small class="text-muted">{{ clase.duracion_min }} min</small>
+                    </td>
+                    <td class="py-3">
+                        <a href="/instructor/{{ clase.instructor_id }}" class="text-decoration-none text-info fw-semibold">
+                            <i class="bi bi-person-circle me-1"></i> {{ clase.nombre_profe }}
+                        </a>
+                    </td>
+                    <td class="py-3">
+                        <span class="d-block text-dark fw-medium">
+                            <i class="bi bi-calendar-event text-muted me-1"></i> {{ clase.fecha_hora.strftime('%d/%m/%Y') }}
+                        </span>
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> {{ clase.fecha_hora.strftime('%H:%M') }}
+                        </small>
+                    </td>
+                    <td class="py-3">
+                        {% if clase.modalidad == 'PRESENCIAL' %}
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">Presencial</span>
+                        {% else %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2">Online</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end pe-4 py-3">
+                        {% if current_user.rol == 'YOGUI' %}
+                            <a href="/reservas/crear/{{ clase.id }}" class="btn btn-primary btn-sm rounded-pill px-4 fw-bold shadow-sm hover-card">
+                                Reservar
+                            </a>
+                        {% elif current_user.rol in ['INSTRUCTOR', 'ADMIN', 'ADMIN_SHALA'] and clase.puede_tomar_lista %}
+                            <a href="/asistencia/tomar/{{ clase.id }}" class="btn btn-success btn-sm rounded-pill px-3 fw-bold shadow-sm">
+                                <i class="bi bi-clipboard-check me-1"></i> Tomar Lista
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="bi bi-calendar-x fs-1 d-block mb-3 opacity-50"></i>
+                        <h5>No hay clases programadas en este momento.</h5>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
