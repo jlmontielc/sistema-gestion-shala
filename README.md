@@ -26,7 +26,7 @@
 - **Base de datos**: MySQL (con PyMySQL)
 - **Frontend**: HTML, CSS, Bootstrap 5, Bootstrap Icons, Jinja2
 - **Pagos**: Stripe API
-- **Despliegue**: Vercel (serverless functions), Aiven (base de datos)
+- **Despliegue**: Vercel, Aiven (base de datos)
 - **Control de versiones**: Git, GitHub
 
 ## Requisitos previos
@@ -85,7 +85,7 @@ Sigue estos pasos para ejecutar el proyecto en tu máquina local:
    ```
    La aplicación estará disponible en `http://localhost:5000`.
 
-## ☁️ Despliegue en Vercel
+## Despliegue en Vercel
 
 El proyecto está configurado para desplegarse fácilmente en Vercel.
 
@@ -138,7 +138,7 @@ El proyecto está configurado para desplegarse fácilmente en Vercel.
 ```
 studiozen/
 ├── app/
-│   ├── models/              # Modelos de base de datos
+│   ├── models/               # Modelos de base de datos
 │   ├── routes/               # Controladores (auth, clases, shalas, etc.)
 │   ├── templates/            # Plantillas HTML (Jinja2)
 │   ├── static/               # Archivos estáticos (imagen favicon)
